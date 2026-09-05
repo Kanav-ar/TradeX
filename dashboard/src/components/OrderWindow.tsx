@@ -4,6 +4,7 @@ import { useOrderStore } from "../store/orders.store";
 import { buyOrder, sellOrder } from "../api/order.api";
 import { useHoldingStore } from "../store/holdings.store";
 import { usePositionStore } from "../store/positions.store";
+import { useFundsStore } from "../store/funds.store";
 
 interface OrderActionWindowProps extends OrderDetails {
   onClose: () => void;
@@ -36,6 +37,8 @@ export default function OrderWindow({
 
   const refreshPositions = usePositionStore((state) => state.refreshPositions);
 
+  const refreshFunds = useFundsStore((state) => state.refreshFunds);
+
   async function handleBuyClick() {
     try {
       const order = await buyOrder({
@@ -52,6 +55,7 @@ export default function OrderWindow({
 
       await refreshHoldings();
       await refreshPositions();
+      await refreshFunds();
 
       onClose();
     } catch (error) {
@@ -75,6 +79,7 @@ export default function OrderWindow({
 
       await refreshHoldings();
       await refreshPositions();
+      await refreshFunds();
 
       onClose();
     } catch (error) {
