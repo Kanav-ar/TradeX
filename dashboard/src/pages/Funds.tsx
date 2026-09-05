@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getFunds, addFunds } from "../api/funds.api";
+import { getFunds, addFunds, withdrawFunds } from "../api/funds.api";
 import { useFundsStore } from "../store/funds.store";
 
 const Funds = () => {
@@ -8,6 +8,9 @@ const Funds = () => {
   const [amount, setAmount] = useState("");
   const [showAddFunds, setShowAddFunds] = useState(false);
   const [addingFunds, setAddingFunds] = useState(false);
+  const [showWithdraw, setShowWithdraw] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState("");
+  const [withdrawingFunds, setWithdrawingFunds] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleAddFunds = async () => {
@@ -31,7 +34,31 @@ const Funds = () => {
       setAddingFunds(false);
     }
   };
-  
+
+  const handleWithdrawFunds = async () => {
+    const numericAmount = Number(withdrawAmount);
+
+    if (!numericAmount || numericAmount <= 0) {
+      setError("Enter a valid amount");
+      return;
+    }
+
+    try {
+      setWithdrawingFunds(true);
+      setError(null);
+
+      const updatedFunds = await withdrawFunds(numericAmount);
+
+      setFunds(updatedFunds);
+      setShowWithdraw(false);
+      setWithdrawAmount("");
+    } catch (error: any) {
+      setError(error?.response?.data?.message ?? "Failed to withdraw funds");
+    } finally {
+      setWithdrawingFunds(false);
+    }
+  };
+
   useEffect(() => {
     const fetchFunds = async () => {
       try {
@@ -65,7 +92,15 @@ const Funds = () => {
             Add funds
           </button>
 
-          <button className="rounded-sm bg-blue-500 px-5 py-2 text-white hover:bg-blue-400">
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              setWithdrawAmount("");
+              setShowWithdraw(true);
+            }}
+            className="rounded-sm bg-blue-500 px-5 py-2 text-white hover:bg-blue-400"
+          >
             Withdraw
           </button>
         </div>
@@ -211,6 +246,48 @@ const Funds = () => {
           </div>
         </div>
       )}
+
+      {showWithdraw && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-[90%] max-w-md rounded-lg bg-white p-6 dark:bg-[#070d17]">
+            <h2 className="mb-4 text-xl font-medium text-gray-800 dark:text-gray-100">
+              Withdraw Funds
+            </h2>
+
+            <input
+              type="number"
+              min="1"
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              placeholder="Enter amount"
+              className="mb-3 w-full rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+            />
+
+            {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
+
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowWithdraw(false)}
+                disabled={withdrawingFunds}
+                className="rounded px-4 py-2 text-gray-600 cursor-pointer dark:text-gray-300 hover:bg-gray-400/50"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleWithdrawFunds}
+                disabled={withdrawingFunds}
+                className="rounded bg-blue-500 px-4 py-2 text-white cursor-pointer hover:bg-blue-400"
+              >
+                {withdrawingFunds ? "Withdrawing..." : "Withdraw"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 };

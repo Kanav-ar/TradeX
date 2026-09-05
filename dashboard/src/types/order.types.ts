@@ -1,9 +1,14 @@
-export type OrderMode = "BUY" | "SELL" ;
+export type OrderSide = "BUY" | "SELL";
+
+export type OrderProduct = "CNC" | "MIS";
 
 export interface OrderDetails {
-  uid: string;
+  symbol: string;
+  exchange: string;
+  isin?: string;
+  name: string;
   price: number;
-  mode: OrderMode;
+  side: OrderSide;
 }
 
 export interface Order {
@@ -15,8 +20,8 @@ export interface Order {
   name: string;
   qty: number;
   price: number;
-  side:  "BUY" | "SELL";
-  product: "CNC" | "MIS";
+  side:  OrderSide;
+  product: OrderProduct;
   status: "COMPLETED" | "FAILED";
   createdAt: string;
   updatedAt: string;

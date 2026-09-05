@@ -36,9 +36,12 @@ export default function BuyWindowContextProvider({
           <div className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" />
 
           <OrderWindow
-            uid={selectedStockDetails.uid}
+            symbol={selectedStockDetails.symbol}
+            exchange={selectedStockDetails.exchange}
+            isin={selectedStockDetails.isin}
+            name={selectedStockDetails.name}
             price={selectedStockDetails.price}
-            mode={selectedStockDetails.mode}
+            side={selectedStockDetails.side}
             onClose={closeOrderWindow}
           />
         </>

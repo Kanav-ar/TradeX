@@ -1,7 +1,7 @@
 import { useState } from "react";
-import type { OrderDetails } from "../types/order.types";
+import type { OrderDetails, OrderProduct } from "../types/order.types";
 import { useOrderStore } from "../store/orders.store";
-import { api } from "../api/axios";
+import { buyOrder, sellOrder } from "../api/order.api";
 
 interface OrderActionWindowProps extends OrderDetails {
   onClose: () => void;
@@ -13,9 +13,12 @@ interface StockDetails {
 }
 
 export default function OrderWindow({
-  uid,
+  symbol,
+  exchange,
+  isin,
+  name,
   price,
-  mode,
+  side,
   onClose,
 }: OrderActionWindowProps) {
   const [stockDetails, setStockDetails] = useState<StockDetails>({
@@ -25,28 +28,44 @@ export default function OrderWindow({
 
   const addOrder = useOrderStore((state) => state.addOrder);
 
-  async function handleBuyClick() {
-    const response = await api.post("/orders/buy", {
-      name: uid,
-      qty: stockDetails.quantity,
-      price: stockDetails.price,
-      mode: "BUY",
-    });
+  const [product, setProduct] = useState<OrderProduct>("CNC");
 
-    addOrder(response.data.data);
-    onClose();
+  async function handleBuyClick() {
+    try {
+      const order = await buyOrder({
+        symbol,
+        exchange,
+        isin,
+        name,
+        qty: stockDetails.quantity,
+        price: stockDetails.price,
+        product,
+      });
+
+      addOrder(order);
+      onClose();
+    } catch (error) {
+      console.error("BUY ORDER FAILED:", error);
+    }
   }
 
   async function handleSellClick() {
-   const response = await api.post("/orders/sell", {
-      name: uid,
-      qty: stockDetails.quantity,
-      price: stockDetails.price,
-      mode: "SELL",
-    });
+    try {
+      const order = await sellOrder({
+        symbol,
+        exchange,
+        isin,
+        name,
+        qty: stockDetails.quantity,
+        price: stockDetails.price,
+        product,
+      });
 
-    addOrder(response.data.data);
-    onClose();
+      addOrder(order);
+      onClose();
+    } catch (error) {
+      console.error("SELL ORDER FAILED:", error);
+    }
   }
 
   return (
@@ -54,10 +73,10 @@ export default function OrderWindow({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {mode === "BUY" ? <>BUY</> : <>SELL</>}
+            {side === "BUY" ? <>BUY</> : <>SELL</>}
           </p>
 
-          <h2 className="text-xl font-semibold dark:text-white">{uid}</h2>
+          <h2 className="text-xl font-semibold dark:text-white">{symbol}</h2>
         </div>
 
         <button
@@ -91,8 +110,38 @@ export default function OrderWindow({
           }))
         }
       />
+      <div className="mt-6">
+        <label className="text-sm text-gray-600 dark:text-gray-400">
+          Product
+        </label>
 
-      {mode === "BUY" ? (
+        <div className="mt-2 flex gap-3">
+          <button
+            type="button"
+            onClick={() => setProduct("CNC")}
+            className={`flex-1 rounded-lg border py-2 font-medium transition ${
+              product === "CNC"
+                ? "border-blue-500 bg-blue-500 text-white"
+                : "border-gray-200 text-gray-600 dark:border-white/10 dark:text-gray-400"
+            }`}
+          >
+            CNC
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setProduct("MIS")}
+            className={`flex-1 rounded-lg border py-2 font-medium transition ${
+              product === "MIS"
+                ? "border-blue-500 bg-blue-500 text-white"
+                : "border-gray-200 text-gray-600 dark:border-white/10 dark:text-gray-400"
+            }`}
+          >
+            MIS
+          </button>
+        </div>
+      </div>
+      {side === "BUY" ? (
         <button
           className="mt-6 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:cursor-pointer hover:bg-blue-800"
           onClick={handleBuyClick}

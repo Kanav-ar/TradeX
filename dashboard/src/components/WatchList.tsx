@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import { api } from "../api/axios";
 
 const WatchList = () => {
-
   // useEffect(() => {
   //   (async() => {
   //     const data = await api("/watchlist")
@@ -14,7 +13,6 @@ const WatchList = () => {
   //     console.log("frontend\n",data)
   //   })()
   // },[])
-
 
   return (
     <div className=" hidden lg:block lg:basis-[32%] h-viewport overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200">
@@ -106,8 +104,24 @@ function WatchListItem({ name, price, percent, isDown }: WatchListItemProps) {
         </div>
 
         <WatchListActions
-          BuyFn={() => openOrderWindow({uid:name, price:price, mode:"BUY"})}
-          SellFn={() => openOrderWindow({uid:name, price:price, mode:"SELL"})}
+          BuyFn={() =>
+            openOrderWindow({
+              symbol: name,
+              exchange: "NSE",
+              name,
+              price,
+              side: "BUY",
+            })
+          }
+          SellFn={() =>
+            openOrderWindow({
+              symbol: name,
+              exchange: "NSE",
+              name,
+              price,
+              side: "SELL",
+            })
+          }
         />
       </div>
     </li>
