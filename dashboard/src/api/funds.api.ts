@@ -12,3 +12,9 @@ export async function addFunds(amount: number): Promise<Funds> {
 
   return response.data.data;
 }
+
+export async function withdrawFunds(amount: number): Promise<Funds> {
+  const response = await api.post("/funds/withdraw", { amount });
+
+  return response.data.data;
+}
