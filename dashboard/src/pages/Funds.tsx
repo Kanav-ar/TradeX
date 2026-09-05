@@ -1,11 +1,37 @@
-import { useEffect } from "react";
-import { Link } from "react-router";
-import { getFunds } from "../api/funds.api";
+import { useEffect, useState } from "react";
+import { getFunds, addFunds } from "../api/funds.api";
 import { useFundsStore } from "../store/funds.store";
 
 const Funds = () => {
   const { funds, setFunds } = useFundsStore();
 
+  const [amount, setAmount] = useState("");
+  const [showAddFunds, setShowAddFunds] = useState(false);
+  const [addingFunds, setAddingFunds] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleAddFunds = async () => {
+    const numericAmount = Number(amount);
+
+    if (!numericAmount || numericAmount <= 0) {
+      setError("Enter a valid amount");
+      return;
+    }
+
+    try {
+      setAddingFunds(true);
+      setError(null);
+      const updatedFunds = await addFunds(numericAmount);
+      setFunds(updatedFunds);
+      setShowAddFunds(false);
+      setAmount("");
+    } catch (error: any) {
+      setError(error?.response?.data?.message ?? "Failed to add funds");
+    } finally {
+      setAddingFunds(false);
+    }
+  };
+  
   useEffect(() => {
     const fetchFunds = async () => {
       try {
@@ -27,7 +53,15 @@ const Funds = () => {
         </p>
 
         <div className="flex flex-wrap justify-center gap-2">
-          <button className="rounded-sm bg-green-500 px-5 py-2 text-white hover:bg-green-400">
+          <button
+            type="button"
+            onClick={() => {
+              setError(null);
+              setAmount("");
+              setShowAddFunds(true);
+            }}
+            className="rounded-sm bg-green-600 px-5 py-2 text-white cursor-pointer hover:bg-green-500"
+          >
             Add funds
           </button>
 
@@ -136,6 +170,47 @@ const Funds = () => {
           </div>
         </div> */}
       </div>
+
+      {showAddFunds && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-[90%] max-w-md rounded-lg bg-white p-6 dark:bg-[#070d17]">
+            <h2 className="mb-4 text-xl font-medium text-gray-800 dark:text-gray-100">
+              Add Funds
+            </h2>
+
+            <input
+              type="number"
+              min="1"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="Enter amount"
+              className="mb-3 w-full rounded border border-gray-300 px-3 py-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+            />
+
+            {error && <p className="mb-3 text-sm text-red-500">{error}</p>}
+
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setShowAddFunds(false)}
+                className="rounded px-4 py-2 text-gray-600 dark:text-gray-300 cursor-pointer hover:bg-gray-400/50"
+                disabled={addingFunds}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={handleAddFunds}
+                disabled={addingFunds}
+                className="rounded bg-green-600 px-4 py-2 text-white cursor-pointer hover:bg-green-500"
+              >
+                {addingFunds ? "Adding..." : "Add Funds"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

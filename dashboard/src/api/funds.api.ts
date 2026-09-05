@@ -6,3 +6,9 @@ export async function getFunds(): Promise<Funds> {
 
   return response.data.data;
 }
+
+export async function addFunds(amount: number): Promise<Funds> {
+  const response = await api.post("/funds/add", { amount });
+
+  return response.data.data;
+}
