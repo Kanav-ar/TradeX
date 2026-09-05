@@ -2,6 +2,8 @@ import { useState } from "react";
 import type { OrderDetails, OrderProduct } from "../types/order.types";
 import { useOrderStore } from "../store/orders.store";
 import { buyOrder, sellOrder } from "../api/order.api";
+import { useHoldingStore } from "../store/holdings.store";
+import { usePositionStore } from "../store/positions.store";
 
 interface OrderActionWindowProps extends OrderDetails {
   onClose: () => void;
@@ -30,6 +32,10 @@ export default function OrderWindow({
 
   const [product, setProduct] = useState<OrderProduct>("CNC");
 
+  const refreshHoldings = useHoldingStore((state) => state.refreshHoldings);
+
+  const refreshPositions = usePositionStore((state) => state.refreshPositions);
+
   async function handleBuyClick() {
     try {
       const order = await buyOrder({
@@ -43,6 +49,10 @@ export default function OrderWindow({
       });
 
       addOrder(order);
+
+      await refreshHoldings();
+      await refreshPositions();
+
       onClose();
     } catch (error) {
       console.error("BUY ORDER FAILED:", error);
@@ -62,6 +72,10 @@ export default function OrderWindow({
       });
 
       addOrder(order);
+
+      await refreshHoldings();
+      await refreshPositions();
+
       onClose();
     } catch (error) {
       console.error("SELL ORDER FAILED:", error);
