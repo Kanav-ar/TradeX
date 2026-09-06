@@ -1,4 +1,4 @@
-import logo from "../../../assets/logo.svg";
+
 import { Link, NavLink } from "react-router";
 import ThemeBtn from "../../common/ThemeBtn";
 import Dropdown from "./Dropdown";

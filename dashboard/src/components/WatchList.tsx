@@ -6,7 +6,7 @@ import { getStockQuotes, getWatchlist } from "../api/watchlist.api";
 import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
-  const { stocks, quotes, setStocks, setQuotes, appendQuotes, appendStocks } =
+  const { stocks, quotes, setStocks, setQuotes, appendStocks } =
     useWatchlistStore();
   const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
   const [search, setSearch] = useState("");
@@ -15,30 +15,43 @@ const WatchList = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const fetchWatchlist = async () => {
+  const fetchWatchlist = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await getWatchlist(1, 50, debouncedSearch);
+
+      setStocks(data.stocks);
+      setQuotes([]);
+
+      setPage(1);
+      setTotalPages(data.pagination.total_pages);
+
       try {
-        const data = await getWatchlist(1, 50, debouncedSearch);
-
-        setStocks(data.stocks);
-        setQuotes([]);
-
         const symbols = data.stocks.map((stock) => stock.symbol);
 
         if (symbols.length > 0) {
           const quoteData = await getStockQuotes(symbols);
           setQuotes(quoteData);
         }
-
-        setPage(1);
-        setTotalPages(data.pagination.total_pages);
-      } catch (error) {
-        console.error("Failed to fetch watchlist:", error);
+      } catch (quoteError) {
+        console.error("Failed to fetch stock quotes:", quoteError);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch watchlist:", error);
+      setError("Unable to load stocks");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchWatchlist();
-  }, [debouncedSearch, setStocks, setQuotes]);
+  fetchWatchlist();
+}, [debouncedSearch, setStocks, setQuotes]);
 
   // useEffect(() => {
   //   if (stocks.length === 0) {
@@ -112,35 +125,44 @@ const WatchList = () => {
         </span>
       </div>
 
-      <ul className="flex-1 overflow-y-auto pb-20">
-        {stocks.map((stock) => {
-          const quote = quoteMap.get(stock.symbol);
+      {loading === true ? (
+        <div className="p-6 text-center text-sm text-gray-400 h-50 flex flex-col justify-center gap-4">
+          <b className="text-xl">Loading...</b>
+          {!loading && error && (
+            <li className="p-6 text-center text-sm text-gray-400">{error}</li>
+          )}
+        </div>
+      ) : (
+        <ul className="flex-1 overflow-y-auto pb-20">
+          {stocks.map((stock) => {
+            const quote = quoteMap.get(stock.symbol);
 
-          return (
-            <WatchListItem
-              key={stock.symbol}
-              symbol={stock.symbol}
-              name={stock.company_name}
-              exchange={stock.exchange}
-              isin={stock.isin}
-              price={quote?.close ?? null}
-              changePercent={quote?.change_pct ?? null}
-            />
-          );
-        })}
-        {page < totalPages && (
-          <li className="border-t border-gray-200 p-3 dark:border-gray-800">
-            <button
-              type="button"
-              onClick={loadMore}
-              disabled={loadingMore}
-              className="w-full rounded-md py-2 text-sm text-blue-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-blue-400 dark:hover:bg-gray-800"
-            >
-              {loadingMore ? "Loading..." : "Load more"}
-            </button>
-          </li>
-        )}
-      </ul>
+            return (
+              <WatchListItem
+                key={stock.symbol}
+                symbol={stock.symbol}
+                name={stock.company_name}
+                exchange={stock.exchange}
+                isin={stock.isin}
+                price={quote?.close ?? null}
+                changePercent={quote?.change_pct ?? null}
+              />
+            );
+          })}
+          {page < totalPages && (
+            <li className="border-t border-gray-200 p-3 dark:border-gray-800">
+              <button
+                type="button"
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="w-full rounded-md py-2 text-sm text-blue-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-blue-400 dark:hover:bg-gray-800"
+              >
+                {loadingMore ? "Loading..." : "Load more"}
+              </button>
+            </li>
+          )}
+        </ul>
+      )}
     </div>
   );
 };

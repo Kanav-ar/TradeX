@@ -15,45 +15,53 @@ const getAllPositions = WrapAsync(async (req, res) => {
   }).sort({
     createdAt: -1,
   });
-  
+
   if (positions.length === 0) {
     return res
       .status(200)
       .json(new ApiResponse(200, [], "All positions fetched successfully"));
   }
 
-  const symbols = positions.map((position) => position.symbol);
+  let quoteMap = new Map<string, number | null>();
 
   const apiKey = process.env.WATCHLIST_API_KEY;
 
-  if (!apiKey) {
-    throw new ApiError(500, "Watchlist API key is not configured");
+  if (apiKey) {
+    const symbols = positions.map((position) => position.symbol);
+
+    const queryParams = new URLSearchParams({
+      symbols: symbols.join(","),
+    });
+
+    try {
+      const response = await fetch(
+        `https://bharatstockapi.com/v1/stocks/quotes?${queryParams.toString()}`,
+        {
+          headers: {
+            "X-API-Key": apiKey,
+          },
+        },
+      );
+
+      if (response.ok) {
+        const quotes = (await response.json()) as StockQuote[];
+
+        quoteMap = new Map(
+          quotes
+            .filter((quote) => quote.found && quote.close !== null)
+            .map((quote) => [quote.symbol, quote.close]),
+        );
+      } else {
+        console.error(
+          `Failed to fetch stock quotes: ${response.status} ${response.statusText}`,
+        );
+      }
+    } catch (error) {
+      console.error("Stock quote request failed:", error);
+    }
+  } else {
+    console.error("WATCHLIST_API_KEY is not configured");
   }
-
-  const queryParams = new URLSearchParams({
-    symbols: symbols.join(","),
-  });
-
-  const response = await fetch(
-    `https://bharatstockapi.com/v1/stocks/quotes?${queryParams.toString()}`,
-    {
-      headers: {
-        "X-API-Key": apiKey,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    throw new ApiError(response.status, "Failed to fetch stock quotes");
-  }
-
-  const quotes = (await response.json()) as StockQuote[];
-
-  const quoteMap = new Map(
-    quotes
-      .filter((quote) => quote.found && quote.close !== null)
-      .map((quote) => [quote.symbol, quote.close]),
-  );
 
   const updatedPositions = positions.map((position) => ({
     ...position.toObject(),
@@ -63,7 +71,11 @@ const getAllPositions = WrapAsync(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(200, updatedPositions, "All positions fetched successfully"),
+      new ApiResponse(
+        200,
+        updatedPositions,
+        "All positions fetched successfully",
+      ),
     );
 });
 
