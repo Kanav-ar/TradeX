@@ -6,38 +6,73 @@ import { getStockQuotes, getWatchlist } from "../api/watchlist.api";
 import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
-  const { stocks, quotes, setStocks, setQuotes } = useWatchlistStore();
+  const { stocks, quotes, setStocks, setQuotes, appendQuotes, appendStocks } =
+    useWatchlistStore();
   const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     const fetchWatchlist = async () => {
       try {
         const data = await getWatchlist(1, 50, debouncedSearch);
-        
+
         setStocks(data.stocks);
+        setQuotes([]);
 
         const symbols = data.stocks.map((stock) => stock.symbol);
 
-        const quoteData = await getStockQuotes(symbols);
-
-        setQuotes(quoteData);
+        if (symbols.length > 0) {
+          const quoteData = await getStockQuotes(symbols);
+          setQuotes(quoteData);
+        }
+        setPage(1);
+        setTotalPages(data.pagination.total_pages);
       } catch (error) {
         console.error("Failed to fetch watchlist:", error);
       }
     };
 
     fetchWatchlist();
-  }, [setStocks, setQuotes]);
+  }, [setStocks, setQuotes, debouncedSearch]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search.trim());
-    }, 400);
+    }, 2000);
 
     return () => clearTimeout(timer);
   }, [search]);
+
+  const loadMore = async () => {
+    if (loadingMore || page >= totalPages) {
+      return;
+    }
+
+    try {
+      setLoadingMore(true);
+
+      const nextPage = page + 1;
+
+      const data = await getWatchlist(nextPage, 50, debouncedSearch);
+
+      const symbols = data.stocks.map((stock) => stock.symbol);
+
+      const quoteData = symbols.length > 0 ? await getStockQuotes(symbols) : [];
+
+      appendStocks(data.stocks);
+      appendQuotes(quoteData);
+
+      setPage(nextPage);
+    } catch (error) {
+      console.error("Failed to load more stocks:", error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   return (
     <div className=" hidden lg:block lg:basis-[32%] h-viewport overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200">
@@ -74,6 +109,18 @@ const WatchList = () => {
             />
           );
         })}
+        {page < totalPages && (
+          <li className="border-t border-gray-200 p-3 dark:border-gray-800">
+            <button
+              type="button"
+              onClick={loadMore}
+              disabled={loadingMore}
+              className="w-full rounded-md py-2 text-sm text-blue-600 transition hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:text-blue-400 dark:hover:bg-gray-800"
+            >
+              {loadingMore ? "Loading..." : "Load more"}
+            </button>
+          </li>
+        )}
       </ul>
     </div>
   );
