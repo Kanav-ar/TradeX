@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { OrderDetails } from "../../types/order";
+import type { OrderDetails } from "../../types/order.types";
 
 interface OrderWindowContextType {
   openOrderWindow: (order: OrderDetails) => void;

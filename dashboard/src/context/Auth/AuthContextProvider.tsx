@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../../api/axios";
 import { AuthContext } from "./AuthContext";
-import type { IUser } from "../../types/user.type";
+import type { IUser } from "../../types/user.types";
 
 interface AuthContextProviderProps {
   children: React.ReactNode;

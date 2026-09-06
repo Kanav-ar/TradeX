@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Order } from "../types/order";
+import type { Order } from "../types/order.types";
 
 
 interface OrderStore {

@@ -1,24 +1,23 @@
-import { useEffect, useState } from "react";
-import { api } from "../api/axios";
-type Holding = {
-  name: string;
-  qty: number;
-  avg: number;
-  price: number;
-  net: string;
-  day: string;
-  isLoss?: string;
-};
+import { useEffect } from "react";
+import { getHoldings } from "../api/holding.api";
+import { useHoldingStore } from "../store/holdings.store";
+
+
 const Holdings = () => {
-  const [allHoldings, setAllHoldings] = useState<Holding[]>([]);
+  const { allHoldings, setAllHoldings } = useHoldingStore();
 
   useEffect(() => {
-    (async () => {
-      const response = await api("/holdings");
+    const fetchAllHoldings = async () => {
+      try {
+        const holdings = await getHoldings();
+        setAllHoldings(holdings);
+      } catch (error) {
+        console.error("Failed to fetch holdings:", error);
+      }
+    };
 
-      setAllHoldings(response.data.data);
-    })();
-  }, []);
+    fetchAllHoldings();
+  },[setAllHoldings]);
 
   const totalInvestment = allHoldings.reduce(
     (total, holding) => total + holding.avg * holding.qty,
@@ -85,18 +84,18 @@ const Holdings = () => {
                 P&amp;L
               </th>
 
-              <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
+              {/* <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
                 Net chg.
               </th>
 
               <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
                 Day chg.
-              </th>
+              </th> */}
             </tr>
           </thead>
 
           <tbody className="text-gray-800 dark:text-gray-300">
-            {allHoldings.map((stock, index) => {
+            {allHoldings.map((stock) => {
               const curVal = stock.price * stock.qty;
               const isProfit = curVal - stock.avg * stock.qty >= 0.0;
 
@@ -104,13 +103,13 @@ const Holdings = () => {
                 ? "text-green-600 dark:text-green-400"
                 : "text-red-600 dark:text-red-400";
 
-              const dayClass = stock.isLoss
-                ? "text-red-600 dark:text-red-400"
-                : "text-green-600 dark:text-green-400";
+              // const dayClass = stock.isLoss
+              //   ? "text-red-600 dark:text-red-400"
+              //   : "text-green-600 dark:text-green-400";
 
               return (
                 <tr
-                  key={index}
+                  key={stock._id}
                   className="border-b border-gray-100 dark:border-gray-800"
                 >
                   <td className="border-r border-gray-200 px-3 py-4 text-left dark:border-gray-700">
@@ -133,13 +132,13 @@ const Holdings = () => {
                     {(curVal - stock.avg * stock.qty).toFixed(2)}
                   </td>
 
-                  <td className={`px-3 py-4 text-right ${profClass}`}>
+                  {/* <td className={`px-3 py-4 text-right ${profClass}`}>
                     {stock.net}
                   </td>
 
                   <td className={`px-3 py-4 text-right ${dayClass}`}>
                     {stock.day}
-                  </td>
+                  </td> */}
                 </tr>
               );
             })}

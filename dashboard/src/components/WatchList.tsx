@@ -1,20 +1,32 @@
 import { ArrowDown, ArrowUp, BarChart, MoreHorizontal } from "lucide-react";
 import { Tooltip } from "@mui/material";
-import { watchlist } from "../data/data";
 import useOrderWindow from "../context/Order/OrderWindowContext";
 import { useEffect } from "react";
-import { api } from "../api/axios";
+import { getStockQuotes, getWatchlist } from "../api/watchlist.api";
+import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
+  const { stocks, quotes, setStocks, setQuotes } = useWatchlistStore();
+  const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
 
-  // useEffect(() => {
-  //   (async() => {
-  //     const data = await api("/watchlist")
+  useEffect(() => {
+    const fetchWatchlist = async () => {
+      try {
+        const data = await getWatchlist();
 
-  //     console.log("frontend\n",data)
-  //   })()
-  // },[])
+        setStocks(data.stocks);
+        const symbols = data.stocks.map((stock) => stock.symbol);
 
+        const quoteData = await getStockQuotes(symbols);
+
+        setQuotes(quoteData);
+      } catch (error) {
+        console.error("Failed to fetch watchlist:", error);
+      }
+    };
+
+    fetchWatchlist();
+  }, [setStocks, setQuotes]);
 
   return (
     <div className=" hidden lg:block lg:basis-[32%] h-viewport overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200">
@@ -30,20 +42,26 @@ const WatchList = () => {
           className=" absolute right-5 text-[0.9rem] font-normal text-gray-400 dark:text-gray-500
           "
         >
-          {watchlist.length}/50
+          {stocks.length}/50
         </span>
       </div>
 
       <ul className="flex-1 overflow-y-auto pb-20">
-        {watchlist.map((stock) => (
-          <WatchListItem
-            key={stock.name}
-            name={stock.name}
-            price={stock.price}
-            percent={stock.percent}
-            isDown={stock.isDown}
-          />
-        ))}
+        {stocks.map((stock) => {
+          const quote = quoteMap.get(stock.symbol);
+
+          return (
+            <WatchListItem
+              key={stock.symbol}
+              symbol={stock.symbol}
+              name={stock.company_name}
+              exchange={stock.exchange}
+              isin={stock.isin}
+              price={quote?.close ?? null}
+              changePercent={quote?.change_pct ?? null}
+            />
+          );
+        })}
       </ul>
     </div>
   );
@@ -52,62 +70,85 @@ const WatchList = () => {
 export default WatchList;
 
 interface WatchListItemProps {
+  symbol: string;
   name: string;
-  price: number;
-  percent: string;
-  isDown: boolean;
+  exchange: string;
+  isin: string;
+  price: number | null;
+  changePercent: number | null;
 }
 
-function WatchListItem({ name, price, percent, isDown }: WatchListItemProps) {
+function WatchListItem({
+  symbol,
+  name,
+  exchange,
+  isin,
+  price,
+  changePercent,
+}: WatchListItemProps) {
   const { openOrderWindow } = useOrderWindow();
+  const isDown = (changePercent ?? 0) < 0;
   return (
-    <li className="relative border-b-[1px] border-gray-200 px-4 py-3 dark:border-gray-800 hover:cursor-move hover:bg-[#f3f3f3] dark:hover:bg-[#111827] group ">
+    <li className="relative group border-b border-gray-200 px-4 py-3 hover:cursor-move hover:bg-[#f3f3f3] dark:border-gray-800 dark:hover:bg-[#111827]">
       <div className="relative flex items-center justify-between text-[0.8rem] font-light">
-        <div className="flex justify-between items-center gap-6 xl:gap-8 w-full">
-          <span className="mr-2 flex-1 text-[rgb(141, 141, 141)] dark:text-gray-400">
-            {name}
-          </span>
+        <div className="flex w-full items-center justify-between gap-6 xl:gap-8">
+          <div className="flex-2">
+            <span className="text-gray-700 dark:text-gray-300">{name}</span>
 
-          <div className="flex xl:flex-1 flex-2 lg:px-4 justify-between gap-4">
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              {symbol} · {exchange}
+            </p>
+          </div>
+
+          <div className="flex flex-1 items-center gap-4 justify-between">
             <span
-              className={`
-                  ${
-                    isDown
-                      ? "text-[rgb(223,73,73)] dark:text-red-400"
-                      : "text-[rgb(103,201,136)] dark:text-green-400"
-                  }
-                `}
+              className={
+                changePercent === null
+                  ? "text-gray-400 dark:text-gray-500"
+                  : isDown
+                    ? "text-red-500 dark:text-red-400"
+                    : "text-green-500 dark:text-green-400"
+              }
             >
-              <div className="flex items-center w-20 gap-2 justify-end">
-                {percent}
-                <span className="flex items-center">
-                  {isDown ? (
-                    <ArrowDown className="text-xs" />
-                  ) : (
-                    <ArrowUp className="text-xs" />
-                  )}
-                </span>
-              </div>
+              {changePercent === null
+                ? "--"
+                : `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%`}
+
+              {changePercent !== null &&
+                (isDown ? (
+                  <ArrowDown className="ml-1 inline h-3 w-3" />
+                ) : (
+                  <ArrowUp className="ml-1 inline h-3 w-3" />
+                ))}
             </span>
 
-            <span
-              className={`
-                flex items-center
-              ${
-                isDown
-                  ? "text-[rgb(223,73,73)] dark:text-red-400"
-                  : "text-[rgb(103,201,136)] dark:text-green-400"
-              }
-            `}
-            >
-              {price.toFixed(2)}
+            <span className="text-gray-700 dark:text-gray-300">
+              {price === null ? "--" : price.toFixed(2)}
             </span>
           </div>
         </div>
 
         <WatchListActions
-          BuyFn={() => openOrderWindow({uid:name, price:price, mode:"BUY"})}
-          SellFn={() => openOrderWindow({uid:name, price:price, mode:"SELL"})}
+          BuyFn={() =>
+            openOrderWindow({
+              symbol,
+              exchange,
+              isin,
+              name,
+              price: price ?? 0,
+              side: "BUY",
+            })
+          }
+          SellFn={() =>
+            openOrderWindow({
+              symbol,
+              exchange,
+              isin,
+              name,
+              price: price ?? 0,
+              side: "SELL",
+            })
+          }
         />
       </div>
     </li>

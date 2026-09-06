@@ -1,7 +1,52 @@
 import { useAuth } from "../context/Auth/AuthContext";
+import { useFundsStore } from "../store/funds.store";
+import { useHoldingStore } from "../store/holdings.store";
+import { useEffect } from "react";
 
 const Summary = () => {
-  const {currentUser} = useAuth();
+  const { currentUser } = useAuth();
+
+  const funds = useFundsStore((state) => state.funds);
+  const allHoldings = useHoldingStore((state) => state.allHoldings);
+  const refreshHoldings = useHoldingStore((state) => state.refreshHoldings);
+  const refreshFunds = useFundsStore((state) => state.refreshFunds);
+
+  useEffect(() => {
+    const loadSummaryData = async () => {
+      try {
+        await Promise.all([refreshFunds(), refreshHoldings()]);
+      } catch (error) {
+        console.error("Failed to load summary data:", error);
+      }
+    };
+
+    loadSummaryData();
+  }, [refreshFunds, refreshHoldings]);
+
+  // all calculations
+  const totalInvestment = allHoldings.reduce(
+    (total, holding) => total + holding.avg * holding.qty,
+    0,
+  );
+
+  const currentValue = allHoldings.reduce(
+    (total, holding) => total + holding.price * holding.qty,
+    0,
+  );
+
+  const totalPnL = currentValue - totalInvestment;
+
+  const pnlPercentage =
+    totalInvestment > 0 ? (totalPnL / totalInvestment) * 100 : 0;
+  const marginAvailable = funds ? funds.availableCash - funds.usedMargin : 0;
+
+  const isProfit = totalPnL >= 0;
+  const pnlSign = isProfit ? "+" : "";
+
+  const pnlClass = isProfit
+    ? "text-green-500 dark:text-green-400"
+    : "text-red-500 dark:text-red-400";
+
   return (
     <>
       <div>
@@ -16,10 +61,9 @@ const Summary = () => {
         <SectionHeading heading="Equity" />
 
         <div className="flex w-full flex-col gap-8 md:w-1/2 md:flex-row md:items-center md:justify-evenly">
-
           <div>
             <h3 className="text-[2.5rem] font-light text-[rgb(71,71,71)] dark:text-gray-100">
-              3.74k
+              ₹{marginAvailable.toFixed(2)}
             </h3>
 
             <p className="text-[0.8rem] text-[rgb(136,136,136)] dark:text-gray-400">
@@ -33,14 +77,14 @@ const Summary = () => {
             <p className="mb-[10px] whitespace-nowrap text-[0.8rem] text-[rgb(136,136,136)] dark:text-gray-400">
               Margins used
               <span className="ml-[5%] inline text-[0.9rem] text-[rgb(100,100,100)] dark:text-gray-200">
-                0
+                ₹{funds?.usedMargin.toFixed(2) ?? "0.00"}
               </span>
             </p>
 
             <p className="whitespace-nowrap text-[0.8rem] text-[rgb(136,136,136)] dark:text-gray-400">
               Opening balance
               <span className="ml-[5%] inline text-[0.9rem] text-[rgb(100,100,100)] dark:text-gray-200">
-                3.74k
+                ₹{funds?.openingBalance.toFixed(2) ?? "0.00"}
               </span>
             </p>
           </div>
@@ -50,15 +94,15 @@ const Summary = () => {
       </div>
 
       <div className="pb-[2%]">
-        <SectionHeading heading="Holdings (13)" />
+        <SectionHeading heading={`Holdings (${allHoldings.length})`} />
 
         <div className="flex w-full flex-col gap-8 md:w-1/2 md:flex-row md:items-center md:justify-evenly">
-
           <div>
             <h3 className="text-[2.5rem] font-light text-[rgb(72,194,55)]">
-              1.55k{" "}
-              <small className="text-[0.8rem] text-[rgb(72,194,55)]">
-                +5.20%
+              ₹{totalPnL.toFixed(2)}{" "}
+              <small className={`text-[0.8rem] ${pnlClass}`}>
+                ({pnlSign}
+                {pnlPercentage.toFixed(2)}%)
               </small>
             </h3>
 
@@ -73,14 +117,14 @@ const Summary = () => {
             <p className="mb-[10px] whitespace-nowrap text-[0.8rem] text-[rgb(136,136,136)] dark:text-gray-400">
               Current Value
               <span className="ml-[5%] inline text-[0.9rem] text-[rgb(100,100,100)] dark:text-gray-200">
-                31.43k
+                ₹{currentValue.toFixed(2)}
               </span>
             </p>
 
             <p className="whitespace-nowrap text-[0.8rem] text-[rgb(136,136,136)] dark:text-gray-400">
               Investment
               <span className="ml-[5%] inline text-[0.9rem] text-[rgb(100,100,100)] dark:text-gray-200">
-                29.88k
+                ₹{totalInvestment.toFixed(2)}
               </span>
             </p>
           </div>

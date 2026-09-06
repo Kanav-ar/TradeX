@@ -24,10 +24,10 @@ app.use(
 
 import healthCheckRouter from "./routes/healthcheck.routes.ts";
 import userRouter from "./routes/user.routes.ts";
-import holdingRouter from "./routes/holding.routes.ts";
-import positionRouter from "./routes/position.routes.ts";
-import orderRouter from "./routes/order.routes.ts";
-import fundRouter from "./routes/fund.routes.ts";
+import holdingRouter from "./routes/holdings.routes.ts";
+import positionRouter from "./routes/positions.routes.ts";
+import orderRouter from "./routes/orders.routes.ts";
+import fundRouter from "./routes/funds.routes.ts";
 import watchlistRouter from "./routes/watchlist.routes.ts";
 
 app.use("/api/v1/healthcheck", healthCheckRouter);

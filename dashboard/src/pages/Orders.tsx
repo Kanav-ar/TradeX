@@ -1,19 +1,23 @@
 import { useEffect } from "react";
 import { Link } from "react-router";
 import { useOrderStore } from "../store/orders.store";
-import { api } from "../api/axios";
+import { getOrders } from "../api/order.api";
 
 export default function Orders() {
   const allOrders = useOrderStore((state) => state.allOrders);
   const setOrders = useOrderStore((state) => state.setAllOrders);
 
   useEffect(() => {
-    (async () => {
-      const response = await api("/orders");
-      
-      console.log(response.data);
-      setOrders(response.data.data);
-    })();
+    const fetchAllOrders = async () => {
+      try {
+        const orders = await getOrders();
+        setOrders(orders);
+      } catch (error) {
+        console.error("Failed to fetch orders:", error);
+      }
+    };
+
+    fetchAllOrders();
   }, [setOrders]);
 
   return (
@@ -52,14 +56,22 @@ export default function Orders() {
                 </th>
 
                 <th className="px-4 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
-                  Mode
+                  Side
+                </th>
+
+                <th className="px-4 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
+                  Product
+                </th>
+
+                <th className="px-4 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
+                  Status
                 </th>
               </tr>
             </thead>
 
             <tbody className="text-gray-800 dark:text-gray-300">
               {allOrders.map((order) => {
-                const isBuy = order.mode === "BUY";
+                const isBuy = order.side === "BUY";
 
                 return (
                   <tr
@@ -81,8 +93,12 @@ export default function Orders() {
                           : "text-orange-600 dark:text-orange-400"
                       }`}
                     >
-                      {order.mode}
+                      {order.side}
                     </td>
+
+                    <td className="px-4 py-4 text-right">{order.product}</td>
+
+                    <td className="px-4 py-4 text-right">{order.status}</td>
                   </tr>
                 );
               })}

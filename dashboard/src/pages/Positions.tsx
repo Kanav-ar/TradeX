@@ -1,25 +1,22 @@
-import { useEffect, useState } from "react";
-import { api } from "../api/axios";
-type Position = {
-  product: string;
-  name: string;
-  qty: number;
-  avg: number;
-  price: number;
-  net: string;
-  day: string;
-  isLoss?: string;
-};
+import { useEffect } from "react";
+import { getPositions } from "../api/position.api";
+import { usePositionStore } from "../store/positions.store";
+
 export default function Positions() {
-  const [allPositions, setAllPositions] = useState<Position[]>([]);
+ const { allPositions, setAllPositions } = usePositionStore();
 
-  useEffect(() => {
-    (async () => {
-      const response = await api("/positions");
+useEffect(() => {
+  const fetchAllPositions = async () => {
+    try {
+      const positions = await getPositions();
+      setAllPositions(positions);
+    } catch (error) {
+      console.error("Failed to fetch positions:", error);
+    }
+  };
 
-      setAllPositions(response.data.data);
-    })();
-  }, []);
+  fetchAllPositions();
+}, [setAllPositions]);
 
   const totalInvestment = allPositions.reduce(
     (total, holding) => total + holding.avg * holding.qty,
@@ -85,14 +82,14 @@ export default function Positions() {
                 P&amp;L
               </th>
 
-              <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
+              {/* <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
                 Day chg.
-              </th>
+              </th> */}
             </tr>
           </thead>
 
           <tbody className="text-gray-800 dark:text-gray-300">
-            {allPositions.map((stock, index) => {
+            {allPositions.map((stock) => {
               const curVal = stock.price * stock.qty;
               const isProfit = curVal - stock.avg * stock.qty >= 0.0;
 
@@ -100,13 +97,13 @@ export default function Positions() {
                 ? "text-green-600 dark:text-green-400"
                 : "text-red-600 dark:text-red-400";
 
-              const dayClass = stock.isLoss
-                ? "text-red-600 dark:text-red-400"
-                : "text-green-600 dark:text-green-400";
+              // const dayClass = stock.isLoss
+              //   ? "text-red-600 dark:text-red-400"
+              //   : "text-green-600 dark:text-green-400";
 
               return (
                 <tr
-                  key={index}
+                  key={stock._id}
                   className="border-b border-gray-100 dark:border-gray-800"
                 >
                   <td className="border-r border-gray-200 px-3 py-4 text-left dark:border-gray-700">
@@ -130,9 +127,9 @@ export default function Positions() {
                     {(curVal - stock.avg * stock.qty).toFixed(2)}
                   </td>
 
-                  <td className={`px-3 py-4 text-right ${dayClass}`}>
+                  {/* <td className={`px-3 py-4 text-right ${dayClass}`}>
                     {stock.day}
-                  </td>
+                  </td> */}
                 </tr>
               );
             })}
