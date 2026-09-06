@@ -29,6 +29,7 @@ const WatchList = () => {
           const quoteData = await getStockQuotes(symbols);
           setQuotes(quoteData);
         }
+
         setPage(1);
         setTotalPages(data.pagination.total_pages);
       } catch (error) {
@@ -37,7 +38,31 @@ const WatchList = () => {
     };
 
     fetchWatchlist();
-  }, [setStocks, setQuotes, debouncedSearch]);
+  }, [debouncedSearch, setStocks, setQuotes]);
+
+  // useEffect(() => {
+  //   if (stocks.length === 0) {
+  //     return;
+  //   }
+
+  //   const fetchQuotes = async () => {
+  //     try {
+  //       const symbols = stocks.map((stock) => stock.symbol);
+
+  //       const quoteData = await getStockQuotes(symbols);
+
+  //       setQuotes(quoteData);
+  //     } catch (error) {
+  //       console.error("Failed to fetch stock quotes:", error);
+  //     }
+  //   };
+
+  //   fetchQuotes();
+
+  //   const interval = setInterval(fetchQuotes, 30000);
+
+  //   return () => clearInterval(interval);
+  // }, [stocks, setQuotes]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -59,13 +84,7 @@ const WatchList = () => {
 
       const data = await getWatchlist(nextPage, 50, debouncedSearch);
 
-      const symbols = data.stocks.map((stock) => stock.symbol);
-
-      const quoteData = symbols.length > 0 ? await getStockQuotes(symbols) : [];
-
       appendStocks(data.stocks);
-      appendQuotes(quoteData);
-
       setPage(nextPage);
     } catch (error) {
       console.error("Failed to load more stocks:", error);
