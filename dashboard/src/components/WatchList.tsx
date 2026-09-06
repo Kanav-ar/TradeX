@@ -8,6 +8,7 @@ import { useWatchlistStore } from "../store/watchlist.store";
 const WatchList = () => {
   const { stocks, quotes, setStocks, setQuotes } = useWatchlistStore();
   const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
+  
 
   useEffect(() => {
     const fetchWatchlist = async () => {
