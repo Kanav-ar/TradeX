@@ -1,21 +1,23 @@
 import { ArrowDown, ArrowUp, BarChart, MoreHorizontal } from "lucide-react";
 import { Tooltip } from "@mui/material";
 import useOrderWindow from "../context/Order/OrderWindowContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getStockQuotes, getWatchlist } from "../api/watchlist.api";
 import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
   const { stocks, quotes, setStocks, setQuotes } = useWatchlistStore();
   const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
-  
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
     const fetchWatchlist = async () => {
       try {
-        const data = await getWatchlist();
-
+        const data = await getWatchlist(1, 50, debouncedSearch);
+        
         setStocks(data.stocks);
+
         const symbols = data.stocks.map((stock) => stock.symbol);
 
         const quoteData = await getStockQuotes(symbols);
@@ -29,14 +31,23 @@ const WatchList = () => {
     fetchWatchlist();
   }, [setStocks, setQuotes]);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search.trim());
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [search]);
+
   return (
     <div className=" hidden lg:block lg:basis-[32%] h-viewport overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200">
       <div className="relative flex items-center">
         <input
           type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           placeholder="Search eg: infy, bse, nifty fut weekly, gold mcx"
-          className=" w-full border-b border-gray-200 bg-transparent px-5 py-4 pr-20 text-[0.9rem] font-normal text-gray-700 placeholder:text-gray-400 outline-none dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-500
-          "
+          className="w-full border-b border-gray-200 bg-transparent px-5 py-4 pr-20 text-[0.9rem] font-normal text-gray-700 placeholder:text-gray-400 outline-none dark:border-gray-700 dark:text-gray-200 dark:placeholder:text-gray-500"
         />
 
         <span
