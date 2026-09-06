@@ -8,8 +8,23 @@ const Summary = () => {
 
   const funds = useFundsStore((state) => state.funds);
   const allHoldings = useHoldingStore((state) => state.allHoldings);
+  const refreshHoldings = useHoldingStore((state) => state.refreshHoldings);
+  const refreshFunds = useFundsStore((state) => state.refreshFunds);
 
-  const investment = allHoldings.reduce(
+  useEffect(() => {
+    const loadSummaryData = async () => {
+      try {
+        await Promise.all([refreshFunds(), refreshHoldings()]);
+      } catch (error) {
+        console.error("Failed to load summary data:", error);
+      }
+    };
+
+    loadSummaryData();
+  }, [refreshFunds, refreshHoldings]);
+
+  // all calculations
+  const totalInvestment = allHoldings.reduce(
     (total, holding) => total + holding.avg * holding.qty,
     0,
   );
@@ -19,11 +34,19 @@ const Summary = () => {
     0,
   );
 
-  const pnl = currentValue - investment;
+  const totalPnL = currentValue - totalInvestment;
 
-  const pnlPercentage = investment > 0 ? (pnl / investment) * 100 : 0;
-
+  const pnlPercentage =
+    totalInvestment > 0 ? (totalPnL / totalInvestment) * 100 : 0;
   const marginAvailable = funds ? funds.availableCash - funds.usedMargin : 0;
+
+  const isProfit = totalPnL >= 0;
+  const pnlSign = isProfit ? "+" : "";
+
+  const pnlClass = isProfit
+    ? "text-green-500 dark:text-green-400"
+    : "text-red-500 dark:text-red-400";
+
   return (
     <>
       <div>
@@ -76,10 +99,10 @@ const Summary = () => {
         <div className="flex w-full flex-col gap-8 md:w-1/2 md:flex-row md:items-center md:justify-evenly">
           <div>
             <h3 className="text-[2.5rem] font-light text-[rgb(72,194,55)]">
-              ₹{pnl.toFixed(2)}
-              <small className="text-[0.8rem] text-[rgb(72,194,55)]">
-                {pnlPercentage >= 0 ? "+" : ""}
-                {pnlPercentage.toFixed(2)}%
+              ₹{totalPnL.toFixed(2)}{" "}
+              <small className={`text-[0.8rem] ${pnlClass}`}>
+                ({pnlSign}
+                {pnlPercentage.toFixed(2)}%)
               </small>
             </h3>
 
@@ -101,7 +124,7 @@ const Summary = () => {
             <p className="whitespace-nowrap text-[0.8rem] text-[rgb(136,136,136)] dark:text-gray-400">
               Investment
               <span className="ml-[5%] inline text-[0.9rem] text-[rgb(100,100,100)] dark:text-gray-200">
-                ₹{investment.toFixed(2)}
+                ₹{totalInvestment.toFixed(2)}
               </span>
             </p>
           </div>
