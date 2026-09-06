@@ -29,7 +29,7 @@ export default function OrderWindow({
     quantity: 1,
   });
 
-  const addOrder = useOrderStore((state) => state.addOrder);
+  const refreshOrders = useOrderStore((state) => state.refreshOrders);
 
   const [product, setProduct] = useState<OrderProduct>("CNC");
 
@@ -73,8 +73,7 @@ export default function OrderWindow({
         product,
       });
 
-      addOrder(order);
-
+      await refreshOrders();
       await refreshHoldings();
       await refreshPositions();
       await refreshFunds();
@@ -107,8 +106,7 @@ export default function OrderWindow({
         product,
       });
 
-      addOrder(order);
-
+      await refreshOrders();
       await refreshHoldings();
       await refreshPositions();
       await refreshFunds();
