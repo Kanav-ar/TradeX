@@ -58,6 +58,14 @@ export default function Orders() {
                 <th className="px-4 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
                   Side
                 </th>
+
+                <th className="px-4 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
+                  Product
+                </th>
+
+                <th className="px-4 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
+                  Status
+                </th>
               </tr>
             </thead>
 
@@ -87,6 +95,10 @@ export default function Orders() {
                     >
                       {order.side}
                     </td>
+
+                    <td className="px-4 py-4 text-right">{order.product}</td>
+
+                    <td className="px-4 py-4 text-right">{order.status}</td>
                   </tr>
                 );
               })}
