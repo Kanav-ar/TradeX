@@ -7,20 +7,26 @@ import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
   const { stocks, quotes, setStocks, setQuotes } = useWatchlistStore();
+  const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
+
   useEffect(() => {
     const fetchWatchlist = async () => {
       try {
         const data = await getWatchlist();
-        const quotes = await getStockQuotes(["WIPRO", "KPITTECH"]);
+
         setStocks(data.stocks);
-        console.log(quotes);
+        const symbols = data.stocks.map((stock) => stock.symbol);
+
+        const quoteData = await getStockQuotes(symbols);
+
+        setQuotes(quoteData);
       } catch (error) {
         console.error("Failed to fetch watchlist:", error);
       }
     };
 
     fetchWatchlist();
-  }, [setStocks]);
+  }, [setStocks, setQuotes]);
 
   return (
     <div className=" hidden lg:block lg:basis-[32%] h-viewport overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200">
@@ -41,15 +47,21 @@ const WatchList = () => {
       </div>
 
       <ul className="flex-1 overflow-y-auto pb-20">
-        {stocks.map((stock) => (
-          <WatchListItem
-            key={stock.symbol}
-            symbol={stock.symbol}
-            name={stock.company_name}
-            exchange={stock.exchange}
-            isin={stock.isin}
-          />
-        ))}
+        {stocks.map((stock) => {
+          const quote = quoteMap.get(stock.symbol);
+
+          return (
+            <WatchListItem
+              key={stock.symbol}
+              symbol={stock.symbol}
+              name={stock.company_name}
+              exchange={stock.exchange}
+              isin={stock.isin}
+              price={quote?.close ?? null}
+              changePercent={quote?.change_pct ?? null}
+            />
+          );
+        })}
       </ul>
     </div>
   );
@@ -62,16 +74,25 @@ interface WatchListItemProps {
   name: string;
   exchange: string;
   isin: string;
+  price: number | null;
+  changePercent: number | null;
 }
 
-function WatchListItem({ symbol, name, exchange, isin }: WatchListItemProps) {
+function WatchListItem({
+  symbol,
+  name,
+  exchange,
+  isin,
+  price,
+  changePercent,
+}: WatchListItemProps) {
   const { openOrderWindow } = useOrderWindow();
-
+  const isDown = (changePercent ?? 0) < 0;
   return (
     <li className="relative group border-b border-gray-200 px-4 py-3 hover:cursor-move hover:bg-[#f3f3f3] dark:border-gray-800 dark:hover:bg-[#111827]">
       <div className="relative flex items-center justify-between text-[0.8rem] font-light">
         <div className="flex w-full items-center justify-between gap-6 xl:gap-8">
-          <div className="flex-1">
+          <div className="flex-2">
             <span className="text-gray-700 dark:text-gray-300">{name}</span>
 
             <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
@@ -79,10 +100,31 @@ function WatchListItem({ symbol, name, exchange, isin }: WatchListItemProps) {
             </p>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="text-gray-400 dark:text-gray-500">--</span>
+          <div className="flex flex-1 items-center gap-4 justify-between">
+            <span
+              className={
+                changePercent === null
+                  ? "text-gray-400 dark:text-gray-500"
+                  : isDown
+                    ? "text-red-500 dark:text-red-400"
+                    : "text-green-500 dark:text-green-400"
+              }
+            >
+              {changePercent === null
+                ? "--"
+                : `${changePercent >= 0 ? "+" : ""}${changePercent.toFixed(2)}%`}
 
-            <span className="text-gray-400 dark:text-gray-500">--</span>
+              {changePercent !== null &&
+                (isDown ? (
+                  <ArrowDown className="ml-1 inline h-3 w-3" />
+                ) : (
+                  <ArrowUp className="ml-1 inline h-3 w-3" />
+                ))}
+            </span>
+
+            <span className="text-gray-700 dark:text-gray-300">
+              {price === null ? "--" : price.toFixed(2)}
+            </span>
           </div>
         </div>
 
@@ -93,7 +135,7 @@ function WatchListItem({ symbol, name, exchange, isin }: WatchListItemProps) {
               exchange,
               isin,
               name,
-              price: 0,
+              price: price ?? 0,
               side: "BUY",
             })
           }
@@ -103,7 +145,7 @@ function WatchListItem({ symbol, name, exchange, isin }: WatchListItemProps) {
               exchange,
               isin,
               name,
-              price: 0,
+              price: price ?? 0,
               side: "SELL",
             })
           }
