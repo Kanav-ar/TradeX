@@ -6,8 +6,7 @@ import { getStockQuotes, getWatchlist } from "../api/watchlist.api";
 import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
-  const { stocks, setStocks } = useWatchlistStore();
-
+  const { stocks, quotes, setStocks, setQuotes } = useWatchlistStore();
   useEffect(() => {
     const fetchWatchlist = async () => {
       try {
@@ -19,7 +18,6 @@ const WatchList = () => {
         console.error("Failed to fetch watchlist:", error);
       }
     };
-
 
     fetchWatchlist();
   }, [setStocks]);
