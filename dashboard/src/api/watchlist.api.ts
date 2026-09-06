@@ -20,6 +20,20 @@ interface WatchlistResponse {
   };
 }
 
+export interface StockQuote {
+  symbol: string;
+  company_name: string | null;
+  trade_date: string | null;
+  open: number | null;
+  high: number | null;
+  low: number | null;
+  close: number | null;
+  prev_close: number | null;
+  change_pct: number | null;
+  volume: number | null;
+  found: boolean;
+}
+
 export async function getWatchlist(
   page = 1,
   pageSize = 50,
@@ -32,5 +46,19 @@ export async function getWatchlist(
     },
   });
 
+  return response.data.data;
+}
+
+export async function getStockQuotes(symbols: string[]): Promise<StockQuote[]> {
+  if (symbols.length === 0) {
+    return [];
+  }
+
+  const response = await api.get("/watchlist/quotes", {
+    params: {
+      symbols: symbols.join(","),
+    },
+  });
+  
   return response.data.data;
 }

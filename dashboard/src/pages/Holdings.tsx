@@ -10,7 +10,6 @@ const Holdings = () => {
     const fetchAllHoldings = async () => {
       try {
         const holdings = await getHoldings();
-        console.log("HOLDINGS FROM API:", holdings);
         setAllHoldings(holdings);
       } catch (error) {
         console.error("Failed to fetch holdings:", error);
