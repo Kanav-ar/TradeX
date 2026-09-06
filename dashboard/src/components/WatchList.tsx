@@ -6,7 +6,7 @@ import { getStockQuotes, getWatchlist } from "../api/watchlist.api";
 import { useWatchlistStore } from "../store/watchlist.store";
 
 const WatchList = () => {
-  const { stocks, quotes, setStocks, setQuotes, appendStocks } =
+  const { stocks, quotes, setStocks, setQuotes, appendQuotes, appendStocks } =
     useWatchlistStore();
   const quoteMap = new Map(quotes.map((quote) => [quote.symbol, quote]));
   const [search, setSearch] = useState("");
@@ -19,63 +19,39 @@ const WatchList = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-  const fetchWatchlist = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = await getWatchlist(1, 50, debouncedSearch);
-
-      setStocks(data.stocks);
-      setQuotes([]);
-
-      setPage(1);
-      setTotalPages(data.pagination.total_pages);
-
+    const fetchWatchlist = async () => {
       try {
-        const symbols = data.stocks.map((stock) => stock.symbol);
+        setLoading(true);
+        setError(null);
 
-        if (symbols.length > 0) {
-          const quoteData = await getStockQuotes(symbols);
-          setQuotes(quoteData);
+        const data = await getWatchlist(1, 50, debouncedSearch);
+
+        setStocks(data.stocks);
+        setQuotes([]);
+
+        setPage(1);
+        setTotalPages(data.pagination.total_pages);
+
+        try {
+          const symbols = data.stocks.map((stock) => stock.symbol);
+
+          if (symbols.length > 0) {
+            const quoteData = await getStockQuotes(symbols);
+            setQuotes(quoteData);
+          }
+        } catch (quoteError) {
+          console.error("Failed to fetch stock quotes:", quoteError);
         }
-      } catch (quoteError) {
-        console.error("Failed to fetch stock quotes:", quoteError);
+      } catch (error) {
+        console.error("Failed to fetch watchlist:", error);
+        setError("Unable to load stocks");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Failed to fetch watchlist:", error);
-      setError("Unable to load stocks");
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchWatchlist();
-}, [debouncedSearch, setStocks, setQuotes]);
-
-  // useEffect(() => {
-  //   if (stocks.length === 0) {
-  //     return;
-  //   }
-
-  //   const fetchQuotes = async () => {
-  //     try {
-  //       const symbols = stocks.map((stock) => stock.symbol);
-
-  //       const quoteData = await getStockQuotes(symbols);
-
-  //       setQuotes(quoteData);
-  //     } catch (error) {
-  //       console.error("Failed to fetch stock quotes:", error);
-  //     }
-  //   };
-
-  //   fetchQuotes();
-
-  //   const interval = setInterval(fetchQuotes, 30000);
-
-  //   return () => clearInterval(interval);
-  // }, [stocks, setQuotes]);
+    fetchWatchlist();
+  }, [debouncedSearch, setStocks, setQuotes]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -97,7 +73,12 @@ const WatchList = () => {
 
       const data = await getWatchlist(nextPage, 50, debouncedSearch);
 
+      const symbols = data.stocks.map((stock) => stock.symbol);
+
+      const quoteData = symbols.length > 0 ? await getStockQuotes(symbols) : [];
+
       appendStocks(data.stocks);
+      appendQuotes(quoteData);
       setPage(nextPage);
     } catch (error) {
       console.error("Failed to load more stocks:", error);
@@ -125,12 +106,13 @@ const WatchList = () => {
         </span>
       </div>
 
-      {loading === true ? (
-        <div className="p-6 text-center text-sm text-gray-400 h-50 flex flex-col justify-center gap-4">
+      {loading ? (
+        <div className="flex h-50 flex-col justify-center gap-4 p-6 text-center text-sm text-gray-400">
           <b className="text-xl">Loading...</b>
-          {!loading && error && (
-            <li className="p-6 text-center text-sm text-gray-400">{error}</li>
-          )}
+        </div>
+      ) : error ? (
+        <div className="flex h-50 items-center justify-center p-6 text-center text-sm text-gray-400">
+          {error}
         </div>
       ) : (
         <ul className="flex-1 overflow-y-auto pb-20">
@@ -149,6 +131,7 @@ const WatchList = () => {
               />
             );
           })}
+
           {page < totalPages && (
             <li className="border-t border-gray-200 p-3 dark:border-gray-800">
               <button
@@ -229,7 +212,8 @@ function WatchListItem({
         </div>
 
         <WatchListActions
-          BuyFn={() =>
+          BuyFn={() => {
+            if (price === null) return;
             openOrderWindow({
               symbol,
               exchange,
@@ -237,9 +221,10 @@ function WatchListItem({
               name,
               price: price ?? 0,
               side: "BUY",
-            })
-          }
-          SellFn={() =>
+            });
+          }}
+          SellFn={() => {
+            if (price === null) return;
             openOrderWindow({
               symbol,
               exchange,
@@ -247,8 +232,9 @@ function WatchListItem({
               name,
               price: price ?? 0,
               side: "SELL",
-            })
-          }
+            });
+          }}
+          disabled={price === null}
         />
       </div>
     </li>
@@ -258,9 +244,11 @@ function WatchListItem({
 function WatchListActions({
   BuyFn,
   SellFn,
+  disabled,
 }: {
   BuyFn: () => void;
   SellFn: () => void;
+  disabled: boolean;
 }) {
   return (
     <>
@@ -269,7 +257,10 @@ function WatchListActions({
           <Tooltip title="Buy" placement="top" arrow>
             <button
               onClick={BuyFn}
-              className={` mr-2 flex h-[30px] w-10 cursor-pointer items-center justify-center rounded border-[0.7px] border-[#4184f3] bg-[#4184f3] text-[0.8rem] font-normal text-white`}
+              disabled={disabled}
+              className={`mr-2 flex h-[30px] w-10 items-center justify-center rounded border-[0.7px] border-[#4184f3] bg-[#4184f3] text-[0.8rem] font-normal text-white ${
+                disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"
+              }`}
             >
               B
             </button>

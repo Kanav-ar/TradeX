@@ -15,7 +15,7 @@ import CommodityTable from "../components/pricing/dynamicTables/CommodityTable";
 import FandOTable from "../components/pricing/dynamicTables/F&O";
 import Login from "../pages/Login";
 import EmailVerify from "../pages/EmailVerify";
-import UserInfo from "../pages/UserInfo";
+import Profile from "../pages/Profile";
 
 export const router = createBrowserRouter([
   {
@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
         element: <Support />,
       },
       { path: "/profile",
-        element:<UserInfo/>
+        element:<Profile/>
        },
     ],
   },
@@ -79,6 +79,10 @@ export const router = createBrowserRouter([
   },
   {
     path: "/verify-email/:token",
+    element: <EmailVerify />,
+  },
+  {
+    path: "/forgot-password/:token",
     element: <EmailVerify />,
   },
 
