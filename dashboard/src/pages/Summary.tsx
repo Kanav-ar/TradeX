@@ -1,6 +1,7 @@
 import { useAuth } from "../context/Auth/AuthContext";
 import { useFundsStore } from "../store/funds.store";
 import { useHoldingStore } from "../store/holdings.store";
+import { useEffect } from "react";
 
 const Summary = () => {
   const { currentUser } = useAuth();
