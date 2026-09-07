@@ -29,9 +29,13 @@ export default function OrderWindow({
     quantity: 1,
   });
 
-  const addOrder = useOrderStore((state) => state.addOrder);
+  const refreshOrders = useOrderStore((state) => state.refreshOrders);
 
   const [product, setProduct] = useState<OrderProduct>("CNC");
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [error, setError] = useState<string | null>(null);
 
   const refreshHoldings = useHoldingStore((state) => state.refreshHoldings);
 
@@ -39,9 +43,27 @@ export default function OrderWindow({
 
   const refreshFunds = useFundsStore((state) => state.refreshFunds);
 
+  const isQuantityValid =
+    Number.isFinite(stockDetails.quantity) &&
+    stockDetails.quantity > 0 &&
+    Number.isInteger(stockDetails.quantity);
+
+  const isPriceValid =
+    Number.isFinite(stockDetails.price) && stockDetails.price > 0;
+
+  const canSubmit = isQuantityValid && isPriceValid && !isSubmitting;
+
   async function handleBuyClick() {
+    if (!isQuantityValid || !isPriceValid) {
+      setError("Enter a valid quantity and price.");
+      return;
+    }
+
     try {
-      const order = await buyOrder({
+      setError(null);
+      setIsSubmitting(true);
+
+      await buyOrder({
         symbol,
         exchange,
         isin,
@@ -51,8 +73,7 @@ export default function OrderWindow({
         product,
       });
 
-      addOrder(order);
-
+      await refreshOrders();
       await refreshHoldings();
       await refreshPositions();
       await refreshFunds();
@@ -60,12 +81,22 @@ export default function OrderWindow({
       onClose();
     } catch (error) {
       console.error("BUY ORDER FAILED:", error);
+      setError("Failed to place buy order.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
-
   async function handleSellClick() {
+    if (!isQuantityValid || !isPriceValid) {
+      setError("Enter a valid quantity and price.");
+      return;
+    }
+
     try {
-      const order = await sellOrder({
+      setError(null);
+      setIsSubmitting(true);
+
+      await sellOrder({
         symbol,
         exchange,
         isin,
@@ -75,8 +106,7 @@ export default function OrderWindow({
         product,
       });
 
-      addOrder(order);
-
+      await refreshOrders();
       await refreshHoldings();
       await refreshPositions();
       await refreshFunds();
@@ -84,6 +114,9 @@ export default function OrderWindow({
       onClose();
     } catch (error) {
       console.error("SELL ORDER FAILED:", error);
+      setError("Failed to place sell order.");
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -160,19 +193,24 @@ export default function OrderWindow({
           </button>
         </div>
       </div>
+      {error && (
+        <p className="mt-4 text-sm text-red-500 dark:text-red-400">{error}</p>
+      )}
       {side === "BUY" ? (
         <button
-          className="mt-6 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:cursor-pointer hover:bg-blue-800"
+          disabled={!canSubmit}
+          className="mt-6 w-full rounded-lg bg-blue-600 py-3 font-medium text-white transition hover:bg-blue-800 disabled:cursor-not-allowed disabled:opacity-50"
           onClick={handleBuyClick}
         >
-          BUY
+          {isSubmitting ? "Processing..." : "BUY"}
         </button>
       ) : (
         <button
-          className="mt-6 w-full rounded-lg bg-orange-600 py-3 font-medium text-white transition hover:cursor-pointer hover:bg-orange-800"
+          disabled={!canSubmit}
+          className="mt-6 w-full rounded-lg bg-orange-600 py-3 font-medium text-white transition hover:bg-orange-800 disabled:cursor-not-allowed disabled:opacity-50"
           onClick={handleSellClick}
         >
-          SELL
+          {isSubmitting ? "Processing..." : "SELL"}
         </button>
       )}
     </div>

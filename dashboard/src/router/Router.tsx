@@ -43,10 +43,6 @@ export const router = createBrowserRouter([
             path: "funds",
             element: <Funds />,
           },
-          {
-            path: "apps",
-            element: <Apps />,
-          },
         ],
       },
     ],

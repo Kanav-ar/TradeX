@@ -1,23 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getHoldings } from "../api/holding.api";
 import { useHoldingStore } from "../store/holdings.store";
 
-
 const Holdings = () => {
-  const { allHoldings, setAllHoldings } = useHoldingStore();
+  const { allHoldings, refreshHoldings } = useHoldingStore();
+  const [loadingHoldings, setLoadingHoldings] = useState(true);
+  const [holdingsError, setHoldingsError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAllHoldings = async () => {
+    const fetchHoldings = async () => {
       try {
-        const holdings = await getHoldings();
-        setAllHoldings(holdings);
+        setLoadingHoldings(true);
+        setHoldingsError(null);
+
+        await refreshHoldings();
       } catch (error) {
         console.error("Failed to fetch holdings:", error);
+        setHoldingsError("Unable to load holdings");
+      } finally {
+        setLoadingHoldings(false);
       }
     };
 
-    fetchAllHoldings();
-  },[setAllHoldings]);
+    fetchHoldings();
+  }, [refreshHoldings]);
 
   const totalInvestment = allHoldings.reduce(
     (total, holding) => total + holding.avg * holding.qty,
@@ -49,6 +55,22 @@ const Holdings = () => {
     : "text-red-500 dark:text-red-400";
 
   const pnlSign = isProfit ? "+" : "";
+
+  if (loadingHoldings) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-gray-500 dark:text-gray-400">
+        Loading holdings...
+      </div>
+    );
+  }
+
+  if (holdingsError) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-center text-red-500 dark:text-red-400">
+        {holdingsError}
+      </div>
+    );
+  }
 
   return (
     <>
@@ -83,14 +105,6 @@ const Holdings = () => {
               <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
                 P&amp;L
               </th>
-
-              {/* <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
-                Net chg.
-              </th>
-
-              <th className="px-3 py-4 text-right text-sm font-light text-gray-400 dark:text-gray-500">
-                Day chg.
-              </th> */}
             </tr>
           </thead>
 
@@ -102,10 +116,6 @@ const Holdings = () => {
               const profClass = isProfit
                 ? "text-green-600 dark:text-green-400"
                 : "text-red-600 dark:text-red-400";
-
-              // const dayClass = stock.isLoss
-              //   ? "text-red-600 dark:text-red-400"
-              //   : "text-green-600 dark:text-green-400";
 
               return (
                 <tr
@@ -131,14 +141,6 @@ const Holdings = () => {
                   <td className={`px-3 py-4 text-right ${profClass}`}>
                     {(curVal - stock.avg * stock.qty).toFixed(2)}
                   </td>
-
-                  {/* <td className={`px-3 py-4 text-right ${profClass}`}>
-                    {stock.net}
-                  </td>
-
-                  <td className={`px-3 py-4 text-right ${dayClass}`}>
-                    {stock.day}
-                  </td> */}
                 </tr>
               );
             })}

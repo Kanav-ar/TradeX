@@ -37,12 +37,14 @@ export interface StockQuote {
 export async function getWatchlist(
   page = 1,
   pageSize = 50,
+  query = "",
 ): Promise<WatchlistResponse> {
   const response = await api.get("/watchlist", {
     params: {
       page,
       page_size: pageSize,
       active_only: true,
+      q: query || undefined,
     },
   });
 
@@ -59,6 +61,6 @@ export async function getStockQuotes(symbols: string[]): Promise<StockQuote[]> {
       symbols: symbols.join(","),
     },
   });
-  
+
   return response.data.data;
 }

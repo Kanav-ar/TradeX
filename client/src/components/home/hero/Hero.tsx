@@ -1,14 +1,41 @@
 import homeHero from "../../../assets/HomeHero.png";
 import darkModeHero from "../../../assets/HomeHero-dm.png";
 import useTheme from "../../../context/Theme/themeContext";
-import BlueBtn from "../../common/BlueBtn";
+import SignUpBtn from "../../signupAndLogin/SignupBtn";
+import LoginBtn from "../../signupAndLogin/LoginBtn";
+import { useAuth } from "../../../context/Auth/AuthContext";
 
 export default function Hero() {
   const { theme } = useTheme();
+  const { currentUser } = useAuth();
+
+  function getTimeOfDay() {
+    const hours = new Date().getHours();
+
+    if (hours >= 5 && hours < 12) {
+      return "Morning";
+    } else if (hours >= 12 && hours < 17) {
+      return "Afternoon";
+    } else {
+      return "Evening";
+    }
+  }
+
+  const period = getTimeOfDay();
+
   return (
     <>
       <div className="flex flex-col items-center">
         <div className="max-w-7xl">
+          {currentUser && (
+            <div className="text-4xl font-semibold text-center pb-5">
+              <span>Good {period}</span>{" "}
+              {currentUser.fullname
+                ?.split(" ")
+                .map((n) => n[0].toUpperCase() + n.slice(1))
+                .join(" ")}
+            </div>
+          )}
           <div className="relative max-w-3xl">
             <img
               src={homeHero}
@@ -33,7 +60,12 @@ export default function Hero() {
             Online platform to invest in stocks, derivatives, mutual funds,
             ETFs, bonds, and more.
           </p>
-          <BlueBtn tag="Sign up for free" />
+          {!currentUser && (
+            <div className="flex  gap-8">
+              <SignUpBtn />
+              <LoginBtn />
+            </div>
+          )}
         </div>
       </div>
     </>

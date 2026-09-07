@@ -4,6 +4,7 @@ import type { IUser } from "../../types/user.types";
 interface AuthContextType {
   currentUser: IUser | null;
   loading: boolean;
+  logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

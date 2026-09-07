@@ -1,24 +1,46 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { useOrderStore } from "../store/orders.store";
-import { getOrders } from "../api/order.api";
 
 export default function Orders() {
-  const allOrders = useOrderStore((state) => state.allOrders);
-  const setOrders = useOrderStore((state) => state.setAllOrders);
+  const { allOrders, refreshOrders } = useOrderStore();
+
+  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [ordersError, setOrdersError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchAllOrders = async () => {
+    const fetchOrders = async () => {
       try {
-        const orders = await getOrders();
-        setOrders(orders);
+        setLoadingOrders(true);
+        setOrdersError(null);
+
+        await refreshOrders();
       } catch (error) {
         console.error("Failed to fetch orders:", error);
+        setOrdersError("Unable to load orders");
+      } finally {
+        setLoadingOrders(false);
       }
     };
 
-    fetchAllOrders();
-  }, [setOrders]);
+    fetchOrders();
+  }, [refreshOrders]);
+
+  if (loadingOrders) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-gray-500 dark:text-gray-400">
+        Loading orders...
+      </div>
+    );
+  }
+
+  if (ordersError) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-center text-red-500 dark:text-red-400">
+        {ordersError}
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 py-2">

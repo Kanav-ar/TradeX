@@ -2,6 +2,7 @@ import { Holding } from "../models/holdings.model";
 import ApiError from "../utils/ApiError";
 import ApiResponse from "../utils/ApiResponse";
 import WrapAsync from "../utils/WrapAsync";
+import { getStockQuotes as fetchStockQuotes } from "../services/stocks/stocks.service";
 
 interface StockQuote {
   symbol: string;
@@ -19,51 +20,24 @@ const getAllHoldings = WrapAsync(async (req, res) => {
   if (holdings.length === 0) {
     return res
       .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          [],
-          "All Holdings fetched successfully!",
-        ),
-      );
+      .json(new ApiResponse(200, [], "All Holdings fetched successfully!"));
   }
 
+  let quoteMap = new Map<string, number | null>();
 
   const symbols = holdings.map((holding) => holding.symbol);
 
-  const apiKey = process.env.WATCHLIST_API_KEY;
+  try {
+    const quotes = await fetchStockQuotes(symbols);
 
-  if (!apiKey) {
-    throw new ApiError(500, "Watchlist API key is not configured");
-  }
-
-  const queryParams = new URLSearchParams({
-    symbols: symbols.join(","),
-  });
-
-  const response = await fetch(
-    `https://bharatstockapi.com/v1/stocks/quotes?${queryParams.toString()}`,
-    {
-      headers: {
-        "X-API-Key": apiKey,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    throw new ApiError(
-      response.status,
-      "Failed to fetch stock quotes",
+    quoteMap = new Map(
+      quotes
+        .filter((quote) => quote.found && quote.close !== null)
+        .map((quote) => [quote.symbol, quote.close]),
     );
+  } catch (error) {
+    console.error("Failed to fetch holding quotes:", error);
   }
-
-  const quotes = (await response.json()) as StockQuote[];
-
-  const quoteMap = new Map(
-    quotes
-      .filter((quote) => quote.found && quote.close !== null)
-      .map((quote) => [quote.symbol, quote.close]),
-  );
 
   const updatedHoldings = holdings.map((holding) => ({
     ...holding.toObject(),
