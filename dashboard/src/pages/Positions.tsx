@@ -1,22 +1,29 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getPositions } from "../api/position.api";
 import { usePositionStore } from "../store/positions.store";
 
 export default function Positions() {
- const { allPositions, setAllPositions } = usePositionStore();
+  const { allPositions, refreshPositions } = usePositionStore();
+  const [loadingPositions, setLoadingPositions] = useState(true);
+  const [positionsError, setPositionsError] = useState<string | null>(null);
 
-useEffect(() => {
-  const fetchAllPositions = async () => {
-    try {
-      const positions = await getPositions();
-      setAllPositions(positions);
-    } catch (error) {
-      console.error("Failed to fetch positions:", error);
-    }
-  };
+  useEffect(() => {
+    const fetchPositions = async () => {
+      try {
+        setLoadingPositions(true);
+        setPositionsError(null);
 
-  fetchAllPositions();
-}, [setAllPositions]);
+        await refreshPositions();
+      } catch (error) {
+        console.error("Failed to fetch positions:", error);
+        setPositionsError("Unable to load positions");
+      } finally {
+        setLoadingPositions(false);
+      }
+    };
+
+    fetchPositions();
+  }, [refreshPositions]);
 
   const totalInvestment = allPositions.reduce(
     (total, holding) => total + holding.avg * holding.qty,
@@ -49,6 +56,22 @@ useEffect(() => {
 
   const pnlSign = isProfit ? "+" : "";
 
+  if (loadingPositions) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-gray-500 dark:text-gray-400">
+        Loading positions...
+      </div>
+    );
+  }
+
+  if (positionsError) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center text-center text-red-500 dark:text-red-400">
+        {positionsError}
+      </div>
+    );
+  }
+  
   return (
     <>
       <h3 className="mb-2 text-[1.3rem] font-light text-gray-700 dark:text-gray-200">

@@ -14,7 +14,6 @@ const WatchList = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loadingMore, setLoadingMore] = useState(false);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -269,13 +268,6 @@ function WatchListActions({
 
         <span>
           <Tooltip title="Sell" placement="top" arrow>
-            {/* <button
-              onClick={SellFn}
-              className={` mr-2 flex h-[30px] w-10 cursor-pointer items-center justify-center rounded 
-                border-[0.7px] border-[#ff5722] bg-[#ff5722] text-[0.8rem] font-normal text-white `}
-            >
-              S
-            </button> */}
             <button
               onClick={SellFn}
               disabled={disabled}
