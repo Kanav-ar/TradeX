@@ -1,7 +1,7 @@
 import ApiError from "../utils/ApiError";
 import ApiResponse from "../utils/ApiResponse";
 import WrapAsync from "../utils/WrapAsync";
-
+import { getStockQuotes as fetchStockQuotes } from "../services/stocks/stocks.service";
 interface BharatStockResponse {
   data: unknown[];
   pagination: {
@@ -64,7 +64,6 @@ const getStocks = WrapAsync(async (req, res) => {
   );
 });
 
-
 const getStockQuotes = WrapAsync(async (req, res) => {
   const { symbols } = req.query;
 
@@ -81,40 +80,7 @@ const getStockQuotes = WrapAsync(async (req, res) => {
     throw new ApiError(400, "At least one valid symbol is required");
   }
 
-  if (symbolList.length > 50) {
-    throw new ApiError(400, "Maximum 50 symbols are allowed");
-  }
-
-  const apiKey = process.env.WATCHLIST_API_KEY;
-
-  if (!apiKey) {
-    throw new ApiError(
-      500,
-      "Watchlist API key is not configured",
-    );
-  }
-
-  const queryParams = new URLSearchParams({
-    symbols: symbolList.join(","),
-  });
-
-  const response = await fetch(
-    `https://bharatstockapi.com/v1/stocks/quotes?${queryParams.toString()}`,
-    {
-      headers: {
-        "X-API-Key": apiKey,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    throw new ApiError(
-      response.status,
-      "Failed to fetch stock quotes",
-    );
-  }
-
-  const quotes = await response.json();
+  const quotes = await fetchStockQuotes(symbolList);
 
   return res.status(200).json(
     new ApiResponse(

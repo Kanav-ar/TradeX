@@ -28,8 +28,18 @@ export default function AuthContextProvider({
     getCurrentUser();
   }, []);
 
+  const logout = async () => {
+    try {
+      await api.post("/users/logout");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setUser(null);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser, loading }}>
+    <AuthContext.Provider value={{ currentUser, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );
