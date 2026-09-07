@@ -12,6 +12,8 @@ const Funds = () => {
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawingFunds, setWithdrawingFunds] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loadingFunds, setLoadingFunds] = useState(true);
+  const [fundsError, setFundsError] = useState<string | null>(null);
 
   const handleAddFunds = async () => {
     const numericAmount = Number(amount);
@@ -62,10 +64,16 @@ const Funds = () => {
   useEffect(() => {
     const fetchFunds = async () => {
       try {
+        setLoadingFunds(true);
+        setFundsError(null);
+
         const fundsData = await getFunds();
         setFunds(fundsData);
       } catch (error) {
         console.error("Failed to fetch funds:", error);
+        setFundsError("Unable to load funds");
+      } finally {
+        setLoadingFunds(false);
       }
     };
 
@@ -287,7 +295,6 @@ const Funds = () => {
           </div>
         </div>
       )}
-
     </>
   );
 };

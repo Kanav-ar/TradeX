@@ -269,9 +269,19 @@ function WatchListActions({
 
         <span>
           <Tooltip title="Sell" placement="top" arrow>
+            {/* <button
+              onClick={SellFn}
+              className={` mr-2 flex h-[30px] w-10 cursor-pointer items-center justify-center rounded 
+                border-[0.7px] border-[#ff5722] bg-[#ff5722] text-[0.8rem] font-normal text-white `}
+            >
+              S
+            </button> */}
             <button
               onClick={SellFn}
-              className={` mr-2 flex h-[30px] w-10 cursor-pointer items-center justify-center rounded border-[0.7px] border-[#ff5722] bg-[#ff5722] text-[0.8rem] font-normal text-white `}
+              disabled={disabled}
+              className={`mr-2 flex h-[30px] w-10 items-center justify-center rounded border-[0.7px] border-[#ff5722] bg-[#ff5722] text-[0.8rem] font-normal text-white ${
+                disabled ? "cursor-not-allowed opacity-40" : "cursor-pointer"
+              }`}
             >
               S
             </button>
