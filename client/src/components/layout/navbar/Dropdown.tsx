@@ -2,22 +2,24 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { NavLink } from "react-router";
 import { useAuth } from "../../../context/Auth/AuthContext";
+import { BiRightArrowAlt } from "react-icons/bi";
+import { api } from "../../../api/axios";
 
 export default function Dropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const { currentUser } = useAuth();
 
   const links = currentUser
-    ? [ 
+    ? [
         { name: "About", path: "/about" },
-        { name: "Products", path: "/products" },
+        // { name: "Products", path: "/products" },
         { name: "Pricing", path: "/pricing" },
         { name: "Support", path: "/support" },
       ]
     : [
         { name: "Signup", path: "/signup" },
         { name: "About", path: "/about" },
-        { name: "Products", path: "/products" },
+        // { name: "Products", path: "/products" },
         { name: "Pricing", path: "/pricing" },
         { name: "Support", path: "/support" },
       ];
@@ -54,6 +56,15 @@ export default function Dropdown() {
                 {link.name}
               </NavLink>
             ))}
+            <button
+              className="text-red-500 dark:text-red-400 cursor-pointer flex px-4 py-4 hover:bg-red-400/20 rounded-lg transition"
+              onClick={async () => {
+                await api("/logout")
+              }}
+            >
+              <span>Logout</span>
+              <BiRightArrowAlt className="text-xl" />
+            </button>
           </div>
         </div>
       )}

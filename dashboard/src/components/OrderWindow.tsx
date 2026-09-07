@@ -63,7 +63,7 @@ export default function OrderWindow({
       setError(null);
       setIsSubmitting(true);
 
-      const order = await buyOrder({
+      await buyOrder({
         symbol,
         exchange,
         isin,
@@ -96,7 +96,7 @@ export default function OrderWindow({
       setError(null);
       setIsSubmitting(true);
 
-      const order = await sellOrder({
+      await sellOrder({
         symbol,
         exchange,
         isin,

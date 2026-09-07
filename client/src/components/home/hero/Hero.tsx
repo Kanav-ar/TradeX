@@ -2,6 +2,8 @@ import homeHero from "../../../assets/HomeHero.png";
 import darkModeHero from "../../../assets/HomeHero-dm.png";
 import useTheme from "../../../context/Theme/themeContext";
 import BlueBtn from "../../common/BlueBtn";
+import SignUpBtn from "../../signupAndLogin/SignupBtn";
+import LoginBtn from "../../signupAndLogin/LoginBtn";
 
 export default function Hero() {
   const { theme } = useTheme();
@@ -33,7 +35,11 @@ export default function Hero() {
             Online platform to invest in stocks, derivatives, mutual funds,
             ETFs, bonds, and more.
           </p>
-          <BlueBtn tag="Sign up for free" />
+          {/* <BlueBtn tag="Sign up for free" /> */}
+          <div className="flex  gap-8">
+            <SignUpBtn/>
+          <LoginBtn/>
+          </div>
         </div>
       </div>
     </>
