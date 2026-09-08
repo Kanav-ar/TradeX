@@ -11,7 +11,7 @@ export default function Navbar() {
         <Link to={"/"}>
           {" "}
           {/* <img src={logo} alt="logo" className="w-32.25" /> */}
-          <h1 className="text-4xl font-bold text-[#387ed1]">TradeX</h1>
+          <h1 className="text-3xl font-bold text-[#387ed1]">TradeX</h1>
         </Link>
       </div>
       <div

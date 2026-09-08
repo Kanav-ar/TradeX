@@ -120,7 +120,7 @@ export default function Orders() {
 
                     <td className="px-4 py-4 text-right">{order.product}</td>
 
-                    <td className="px-4 py-4 text-right">{order.status}</td>
+                    <td className="px-4 py-4 text-right text-green-600 dark:text-green-500">{order.status}</td>
                   </tr>
                 );
               })}

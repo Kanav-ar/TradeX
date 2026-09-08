@@ -11,7 +11,8 @@ export default function Menu() {
   const { currentUser, logout } = useAuth();
   return (
     <div className="flex h-full basis-[68%] items-center justify-between px-5 py-[10px]">
-      <img src={kiteLogoImg} alt="logo" className="w-[50px]" />
+      {/* <img src={kiteLogoImg} alt="logo" className="w-[50px]" /> */}
+      <div className="text-3xl text-[#f56836]">TradeX</div>
 
       <div className="px-4">
         <div className="flex flex-1 items-center ">
