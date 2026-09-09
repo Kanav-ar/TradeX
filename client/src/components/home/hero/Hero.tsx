@@ -2,8 +2,8 @@ import useTheme from "../../../context/Theme/themeContext";
 import SignUpBtn from "../../signupAndLogin/SignupBtn";
 import LoginBtn from "../../signupAndLogin/LoginBtn";
 import { useAuth } from "../../../context/Auth/AuthContext";
-import heroHome from "../../../assets/TradeXdashboard-2.png"
-import heroHomeDark from "../../../assets/TradeXdashboardDark-2.png"
+import heroHome from "../../../assets/tradeXHomeHero.png"
+import heroHomeDark from "../../../assets/tradeXHomeHeroDark.png"
 
 
 export default function Hero() {

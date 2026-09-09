@@ -13,7 +13,7 @@ export default function DashboardLayout() {
             <WatchList />
           </OrderWindowContextProvider>
 
-          <main className="flex-1 p-8 transition-colors duration-100 dark:bg-[#070d17] min-w-0 flex-1 overflow-y-auto">
+          <main className="flex-1 px-8 py-6 transition-colors duration-100 dark:bg-[#070d17]  flex-1 overflow-y-auto">
             <Outlet />
           </main>
         </div>
