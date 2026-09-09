@@ -154,7 +154,7 @@ export default function TradingActivityChart({
             percentage={buyPercentage}
             className="text-blue-500 dark:text-blue-400 "
           />
-
+ 
           <ActivityStat
             label="SELL"
             value={sellOrders.length}
