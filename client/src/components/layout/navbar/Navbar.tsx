@@ -50,17 +50,6 @@ export default function Navbar() {
         </NavLink>
 
         <NavLink
-          to="/products"
-          className={({ isActive }) =>
-            `cursor-pointer hover:text-[#387ed1] ${
-              isActive ? "text-[#387ed1] font-semibold" : ""
-            }`
-          }
-        >
-          Products
-        </NavLink>
-
-        <NavLink
           to="/pricing"
           className={({ isActive }) =>
             `cursor-pointer hover:text-[#387ed1] ${
@@ -80,6 +69,17 @@ export default function Navbar() {
           }
         >
           Support
+        </NavLink>
+
+        <NavLink
+          to="/profile"
+          className={({ isActive }) =>
+            `cursor-pointer hover:text-[#387ed1] ${
+              isActive ? "text-[#387ed1] font-semibold" : ""
+            }`
+          }
+        >
+          Profile
         </NavLink>
       </div>
 

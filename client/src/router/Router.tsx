@@ -5,7 +5,6 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import About from "../pages/About";
 import Pricing from "../pages/Pricing";
-import Products from "../pages/Products";
 import Signup from "../pages/Signup";
 import Support from "../pages/Support";
 import NotFound from "../pages/NotFound";
@@ -56,10 +55,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "products",
-        element: <Products />,
-      },
+    
       {
         path: "support",
         element: <Support />,
