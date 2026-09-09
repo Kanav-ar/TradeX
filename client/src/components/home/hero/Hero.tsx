@@ -1,9 +1,10 @@
-import homeHero from "../../../assets/HomeHero.png";
-import darkModeHero from "../../../assets/HomeHero-dm.png";
 import useTheme from "../../../context/Theme/themeContext";
 import SignUpBtn from "../../signupAndLogin/SignupBtn";
 import LoginBtn from "../../signupAndLogin/LoginBtn";
 import { useAuth } from "../../../context/Auth/AuthContext";
+import heroHome from "../../../assets/tradeXHomeHero.png"
+import heroHomeDark from "../../../assets/tradeXHomeHeroDark.png"
+
 
 export default function Hero() {
   const { theme } = useTheme();
@@ -28,8 +29,8 @@ export default function Hero() {
       <div className="flex flex-col items-center">
         <div className="max-w-7xl">
           {currentUser && (
-            <div className="text-4xl font-semibold text-center pb-5">
-              <span>Good {period}</span>{" "}
+            <div className="text-4xl font-semibold text-center pb-4 mb-5">
+              <span>Good <span className="text-[#387ed1]">{period}</span>, </span>{" "}
               {currentUser.fullname
                 ?.split(" ")
                 .map((n) => n[0].toUpperCase() + n.slice(1))
@@ -38,7 +39,7 @@ export default function Hero() {
           )}
           <div className="relative max-w-3xl">
             <img
-              src={homeHero}
+              src={heroHome}
               alt="Home hero"
               className={`absolute inset-0 w-full rounded-2xl transition-opacity duration-1000 ${
                 theme === "light" ? "opacity-100" : "opacity-0"
@@ -46,7 +47,7 @@ export default function Hero() {
             />
 
             <img
-              src={darkModeHero}
+              src={heroHomeDark}
               alt="Home hero"
               className={`w-full rounded-2xl transition-opacity duration-1000 ${
                 theme === "dark" ? "opacity-100" : "opacity-0"
@@ -55,10 +56,10 @@ export default function Hero() {
           </div>
         </div>
         <div className="flex flex-col gap-8 items-center px-4 pt-8">
-          <h1 className="font-semibold text-3xl">Invest in everything</h1>
+          <h1 className="font-semibold text-3xl">Your market. Your moves.</h1>
           <p className="text-xl text-center">
-            Online platform to invest in stocks, derivatives, mutual funds,
-            ETFs, bonds, and more.
+            A modern trading workspace to explore markets, place trades, and
+            track your portfolio with clarity.
           </p>
           {!currentUser && (
             <div className="flex  gap-8">
