@@ -8,7 +8,6 @@ import EduInfoCard from "./EduInfo";
 
 export default function Education() {
   return (
-    <section className="py-12">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 max-w-2xl">
           <p className="mb-3 text-sm font-medium tracking-[0.2em] text-blue-500">
@@ -83,6 +82,5 @@ export default function Education() {
           </a>
         </div>
       </div>
-    </section>
   );
 }
