@@ -10,7 +10,6 @@ export default function Navbar() {
       <div className="flex-2 px-4 md:px-8 lg:px-16 xl:px-32">
         <Link to={"/"}>
           {" "}
-          {/* <img src={logo} alt="logo" className="w-32.25" /> */}
           <h1 className="text-3xl font-bold dark:text-white ">Trade<span className="text-blue-500">X</span></h1>
         </Link>
       </div>
