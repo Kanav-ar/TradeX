@@ -12,20 +12,12 @@ export default function Charges() {
         </div>
         <div>
           <h4 className="text-lg mt-8 mb-4">Disclaimer</h4>
-          <p className="text-xs text-gray-500">
-            For Delivery based trades, a minimum of ₹0.01 will be charged per
-            contract note. Clients who opt to receive physical contract notes
-            will be charged ₹20 per contract note plus courier charges.
-            Brokerage will not exceed the rates specified by SEBI and the
-            exchanges. All statutory and regulatory charges will be levied at
-            actuals. Brokerage is also charged on expired, exercised, and
-            assigned options contracts. Free investments are available only for
-            our retail individual clients. Companies, Partnerships, Trusts, and
-            HUFs need to pay 0.1% or ₹20 (whichever is less) as delivery
-            brokerage. A brokerage of 0.25% of the contract value will be
-            charged for contracts where physical delivery happens. For netted
-            off positions in physically settled contracts, a brokerage of 0.1%
-            will be charged.
+          <p className="text-gray-500">
+            TradeX is a portfolio project created for demonstration and
+            educational purposes. Pricing shown on this page represents the
+            pricing model implemented for the project and may not reflect the
+            actual charges of any real-world broker or exchange. Statutory and
+            regulatory charges are not simulated unless explicitly stated.
           </p>
         </div>
       </div>

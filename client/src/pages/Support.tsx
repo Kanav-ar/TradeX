@@ -5,10 +5,10 @@ import Hero from "../components/support/hero/Hero";
 export default function Support() {
   return (
     <>
-      <Section className="bg-gray-100 dark:bg-blue-950">
+      <Section className="bg-gray-100 dark:bg-[#0b1220]">
         <Hero />
       </Section>
-      <Section >
+      <Section className="bg-white dark:bg-[#070d17]">
         <FAQs />
       </Section>
     </>
