@@ -4,9 +4,6 @@ import app from "../app";
 
 const router = Router();
 
-// app.get("/healthcheck", healthCheck);
-
-// router.get("/healthcheck", healthCheck);
 
 router.route("/").get(healthCheck);
 
