@@ -14,7 +14,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 const allowedOrigins = [
-  process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
   process.env.DASHBOARD_URL,
 ].filter((origin): origin is string => Boolean(origin));
 

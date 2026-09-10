@@ -28,7 +28,7 @@ userRouter.route("/verify-email/:verificationToken").post(verifyEmail);
 
 userRouter.route("/forgot-password").post(forgotPasswordRequest);
 userRouter
-  .route("/forgot-password/:resetPasswordToken")
+  .route("/reset-password/:resetPasswordToken")
   .post(resetForgotPassword);
 
 userRouter.route("/refresh-token").post(refreshAccessToken)
