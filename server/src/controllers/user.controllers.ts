@@ -1,4 +1,4 @@
-import type { NextFunction, Request, Response } from "express";
+import type { CookieOptions, NextFunction, Request, Response } from "express";
 import WrapAsync from "../utils/WrapAsync";
 import { User, type IUser } from "../models/user.models";
 import ApiError from "../utils/ApiError";
@@ -7,6 +7,12 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import { refreshTokenPayloadSchema } from "../validators/user/refreshToken.validator";
 import { sendEmail } from "../services/email/email.service";
+
+const cookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
 
 const generateAccessAndRefreshTokens = (user: IUser) => {
   const accessToken = user.generateAccessToken();
@@ -41,15 +47,15 @@ const registerUser = WrapAsync(async (req: Request, res: Response) => {
 
   const { unHashedToken, hashedToken, tokenExpiry } =
     newUser.generateTemporaryToken();
-
-  newUser.emailVerificationToken = hashedToken;
-  newUser.emailVerificationExpiry = tokenExpiry;
-  const { accessToken, refreshToken } = generateAccessAndRefreshTokens(newUser);
-
-  newUser.refreshToken = refreshToken;
-  await newUser.save();
-
-  await sendEmail({
+    
+    newUser.emailVerificationToken = hashedToken;
+    newUser.emailVerificationExpiry = tokenExpiry;
+    const { accessToken, refreshToken } = generateAccessAndRefreshTokens(newUser);
+    
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
+    
+    await sendEmail({
     email: newUser.email,
     username: newUser.username,
     verificationUrl: `${process.env.FRONTEND_URL}/verify-email/${unHashedToken}`,
@@ -65,10 +71,6 @@ const registerUser = WrapAsync(async (req: Request, res: Response) => {
     throw new ApiError(500, "Something went wrong while registering the user");
   }
 
-  const cookieOptions = {
-    httpOnly: true,
-    secure: true,
-  };
   return res
     .status(200)
     .cookie("accessToken", accessToken, cookieOptions)
@@ -112,11 +114,6 @@ const loginUser = WrapAsync(async (req: Request, res: Response) => {
     "-password -refreshToken -emailVerificationToken -emailVerificationExpiry",
   );
 
-  const cookieOptions = {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-  };
-
   return res
     .status(200)
     .cookie("accessToken", accessToken, cookieOptions)
@@ -146,11 +143,6 @@ const logoutUser = WrapAsync(async (req: Request, res: Response) => {
       returnDocument: "after",
     },
   );
-
-  const cookieOptions = {
-    httpOnly: true,
-    secure: true,
-  };
 
   return res
     .status(200)
@@ -210,11 +202,6 @@ const refreshAccessToken = WrapAsync(async (req: Request, res: Response) => {
   user.refreshToken = newRefreshToken;
 
   await user.save({ validateBeforeSave: false });
-
-  const cookieOptions = {
-    httpOnly: true,
-    secure: true,
-  };
 
   return res
     .status(200)
