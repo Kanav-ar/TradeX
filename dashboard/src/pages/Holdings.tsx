@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getHoldings } from "../api/holding.api";
 import { useHoldingStore } from "../store/holdings.store";
 
 const Holdings = () => {

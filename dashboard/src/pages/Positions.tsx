@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { getPositions } from "../api/position.api";
 import { usePositionStore } from "../store/positions.store";
 
 export default function Positions() {
