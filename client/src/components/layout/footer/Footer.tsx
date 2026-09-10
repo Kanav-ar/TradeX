@@ -1,5 +1,6 @@
 import { FaGithub, FaLinkedinIn, FaXTwitter } from "react-icons/fa6";
 import { ArrowUpRight } from "lucide-react";
+import TradeXLogo from "../../common/Logo";
 
 const platformLinks = [
   { text: "Dashboard", href: "/dashboard" },
@@ -24,7 +25,7 @@ const accountLinks = [
 
 export default function Footer() {
   return (
-    <footer className=" bg-gray-100 dark:bg-blue-950/20 text-gray-400">
+    <footer className=" bg-gray-100 dark:bg-blue-950/20 text-gray-400 transition-color duration-500">
       <div className="mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10">
         <div className="grid gap-14 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div className="max-w-sm">
@@ -32,7 +33,7 @@ export default function Footer() {
               href="/"
               className="inline-block text-3xl text-black font-bold tracking-tight dark:text-white"
             >
-              Trade<span className="text-blue-500">X</span>
+              <TradeXLogo/>
             </a>
 
             <p className="mt-5 text-sm leading-7 text-gray-500">

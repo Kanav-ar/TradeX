@@ -13,7 +13,7 @@ import CurrencyTable from "../components/pricing/dynamicTables/CurrencyTable";
 import CommodityTable from "../components/pricing/dynamicTables/CommodityTable";
 import FandOTable from "../components/pricing/dynamicTables/F&O";
 import Login from "../pages/Login";
-import EmailVerify from "../pages/EmailVerify";
+import EmailVerify from "../pages/VerifyEmail";
 import Profile from "../pages/Profile";
 
 export const router = createBrowserRouter([

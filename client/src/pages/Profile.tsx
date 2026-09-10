@@ -11,6 +11,7 @@ import {
 import { useAuth } from "../context/Auth/AuthContext";
 import SignUpBtn from "../components/signupAndLogin/SignupBtn";
 import LoginBtn from "../components/signupAndLogin/LoginBtn";
+import EmailStatus from "../components/profile/EmailStatus";
 
 export default function Profile() {
   const { currentUser, logout } = useAuth();
@@ -49,7 +50,7 @@ export default function Profile() {
         </p>
 
         <h1 className="mt-2 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white md:text-4xl">
-          Your TradeX identity
+          Your Trade<span>X</span> identity
         </h1>
 
         <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-500 dark:text-gray-400">
@@ -97,19 +98,7 @@ export default function Profile() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 dark:border-gray-700 dark:bg-gray-800/50">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
-                Account status
-              </p>
-
-              <div className="mt-2 flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-
-                <span className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                  Active
-                </span>
-              </div>
-            </div>
+            <EmailStatus />
           </div>
         </div>
       </section>
@@ -278,7 +267,7 @@ function SettingRow({
 }) {
   const content = (
     <>
-      <div className="flex min-w-0 items-center gap-4">
+      <div className="flex min-w-0 items-center gap-4 ">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300">
           {icon}
         </div>
@@ -294,7 +283,7 @@ function SettingRow({
         </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-2 text-xs font-medium text-blue-500">
+      <div className="flex shrink-0 items-center gap-2 text-xs font-medium text-blue-500 cursor-pointer">
         {action}
         <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
       </div>
@@ -305,21 +294,7 @@ function SettingRow({
     return (
       <a
         href={href}
-        className="
-          group
-          flex
-          items-center
-          justify-between
-          gap-6
-          border-b
-          border-gray-100
-          px-5
-          py-5
-          transition-colors
-          duration-200
-          hover:bg-gray-50
-          dark:border-gray-800
-          dark:hover:bg-gray-800/40
+        className=" group flex items-center justify-between gap-6 border-b border-gray-100 px-5 py-5 cursor-pointer transition-colors duration-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/40
         "
       >
         {content}
