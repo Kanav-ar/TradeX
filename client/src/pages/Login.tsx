@@ -91,7 +91,7 @@ export default function Login() {
 
               <button
                 type="submit"
-                className="w-full mt-8 rounded-lg bg-[#387ed1] px-5 py-2.5 text-sm font-medium text-white cursor-pointer transition hover:bg-[#2f6fb9] focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+                className="w-full mt-8 rounded-lg bg-blue-500 px-5 py-2.5 text-sm font-medium text-white cursor-pointer transition hover:bg-[#2f6fb9] focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
                 disabled={loading}
               >
                 {loading ? "Loggin you in..." : "Login"}
