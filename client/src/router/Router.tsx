@@ -18,6 +18,7 @@ import Profile from "../pages/Profile";
 import ForgotPassword from "../pages/ForgotPassword";
 import ChangePassword from "../components/profile/subpages/ChangePassword";
 import PersonalInformation from "../components/profile/subpages/ViewProfile";
+import Security from "../components/profile/subpages/Security";
 
 export const router = createBrowserRouter([
   {
@@ -76,7 +77,7 @@ export const router = createBrowserRouter([
        },
        {
         path:"/security",
-        element:<></>
+        element:<Security/>
        }
     ],
   },
