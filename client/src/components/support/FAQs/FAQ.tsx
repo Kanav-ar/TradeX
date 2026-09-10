@@ -308,7 +308,7 @@ export default function FAQs() {
 
           <div className="flex items-center gap-5">
             <a
-              href="YOUR_GITHUB_URL"
+              href="https://github.com/Kanav-ar"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-gray-500 transition-colors hover:text-purple-500 dark:text-gray-400 dark:hover:text-purple-400"
@@ -317,7 +317,7 @@ export default function FAQs() {
             </a>
 
             <a
-              href="YOUR_LINKEDIN_URL"
+              href="https://www.linkedin.com/in/ar-kanav/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-gray-500 transition-colors hover:text-blue-700 dark:text-gray-400 dark:hover:text-blue-700"
@@ -326,7 +326,7 @@ export default function FAQs() {
             </a>
 
             <a
-              href="YOUR_PORTFOLIO_URL"
+              href="https://x.com/ar_kanav"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium text-gray-500 transition-colors hover:text-blue-500 dark:text-gray-400 dark:hover:text-blue-400"
@@ -365,26 +365,3 @@ function CategoryButton({
     </button>
   );
 }
-
-//  <a
-//             href="/"
-//             className="
-//             inline-flex
-//             shrink-0
-//             items-center
-//             justify-center
-//             rounded-lg
-//             bg-blue-600
-//             px-5
-//             py-3
-//             text-sm
-//             font-medium
-//             text-white
-//             transition-all
-//             duration-200
-//             hover:bg-blue-700
-//             hover:shadow-lg
-//             "
-//           >
-//             Back to TradeX
-//           </a>

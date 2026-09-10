@@ -9,28 +9,40 @@ import {
   UserRound,
 } from "lucide-react";
 import { useAuth } from "../context/Auth/AuthContext";
+import SignUpBtn from "../components/signupAndLogin/SignupBtn";
+import LoginBtn from "../components/signupAndLogin/LoginBtn";
 
 export default function Profile() {
-  const { currentUser} = useAuth();
+  const { currentUser, logout } = useAuth();
 
   if (!currentUser) {
     return (
-      <div className="flex min-h-[70vh] items-center justify-center">
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+      <div className="flex flex-col gap-8 min-h-[70vh] items-center justify-center">
+        <p className="text-lg text-gray-500 dark:text-gray-400">
           Unable to load profile.
+          <br />
+          Please Signup or login.
         </p>
+        <div className="flex gap-8">
+          <SignUpBtn />
+          <LoginBtn />
+        </div>
       </div>
     );
   }
 
-  const fullname = currentUser.fullname?.trim() || "TradeX User";
+  const fullname =
+    currentUser.fullname
+      ?.trim()
+      .split(" ")
+      .map((n) => n[0].toUpperCase() + n.slice(1))
+      .join(" ") || "TradeX User";
   const username = currentUser.username || "user";
   const email = currentUser.email || "";
   const initial = fullname.charAt(0).toUpperCase();
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:py-14">
-  
       <div className="mb-10">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-500">
           Account
@@ -46,15 +58,12 @@ export default function Profile() {
         </p>
       </div>
 
-
       <section className="relative overflow-hidden rounded-3xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-[#0d1421]">
-
         <div className="pointer-events-none absolute -right-24 -top-24 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 left-1/3 h-64 w-64 rounded-full bg-violet-500/10 blur-3xl" />
 
         <div className="relative p-7 sm:p-9">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
-      
             <div className="flex items-center gap-5">
               <div
                 className=" flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 to-violet-600 text-3xl font-semibold text-white shadow-lg
@@ -88,7 +97,6 @@ export default function Profile() {
               </div>
             </div>
 
-      
             <div className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 dark:border-gray-700 dark:bg-gray-800/50">
               <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
                 Account status
@@ -106,7 +114,6 @@ export default function Profile() {
         </div>
       </section>
 
-   
       <section className="mt-8">
         <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
@@ -133,7 +140,6 @@ export default function Profile() {
         </div>
       </section>
 
-  
       <section className="mt-10">
         <div className="mb-4">
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-500">
@@ -166,11 +172,10 @@ export default function Profile() {
         </div>
       </section>
 
-  
       <section className="mt-8">
         <button
           type="button"
-        //  onClick={logout}
+          onClick={logout}
           className="
             group
             flex
@@ -213,7 +218,6 @@ export default function Profile() {
         </button>
       </section>
 
-      {/* Small footer note */}
       <p className="mt-8 text-center text-xs text-gray-400 dark:text-gray-600">
         TradeX account settings
       </p>

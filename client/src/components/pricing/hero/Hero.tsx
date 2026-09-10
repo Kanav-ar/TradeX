@@ -1,7 +1,7 @@
 export default function Hero() {
   return (
     <div className="mx-auto max-w-3xl space-y-5 text-center">
-      <p className="text-sm font-medium uppercase tracking-[0.2em] text-blue-500">
+      <p className="text-sm font-medium tracking-[0.2em] text-blue-500">
         TradeX Pricing
       </p>
 

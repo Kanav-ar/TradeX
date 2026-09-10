@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 py-10 text-center">
       <div className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-blue-500">
+        <p className="text-sm font-medium tracking-[0.2em] text-blue-500">
           TradeX Support
         </p>
 
