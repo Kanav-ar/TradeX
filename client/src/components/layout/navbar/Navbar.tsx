@@ -7,7 +7,7 @@ import TradeXLogo from "../../common/Logo";
 export default function Navbar() {
   const { currentUser } = useAuth();
   return (
-    <nav className="w-full z-50 sticky top-0 bg-white flex items-center lg:px-12 md:px-10 min-h-20 shadow-md dark:shadow-white dark:shadow-2xs dark:bg-gray-950 transition-all duration-1000">
+    <nav className="w-full z-50 sticky top-0 bg-white flex items-center lg:px-12 md:px-10 min-h-20 shadow-md  dark:shadow-[0_1px_2px_rgba(255,255,255,0.2)] dark:bg-gray-950 transition-all duration-1000">
       <div className="flex-2 px-4 md:px-8 lg:px-16 xl:px-32">
         <Link to={"/"}>
           {" "}
