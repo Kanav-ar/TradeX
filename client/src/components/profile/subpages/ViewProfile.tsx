@@ -1,12 +1,8 @@
-import {
-  ArrowLeft,
-  AtSign,
-  Mail,
-  UserRound,
-} from "lucide-react";
+import { ArrowLeft, AtSign, Mail, UserRound } from "lucide-react";
 import { Link } from "react-router";
 import { useAuth } from "../../../context/Auth/AuthContext";
-
+import VerifiedBadge from "../../common/VerifiedBadge";
+import type { ReactNode } from "react";
 
 export default function PersonalInformation() {
   const { currentUser } = useAuth();
@@ -73,6 +69,7 @@ export default function PersonalInformation() {
           label="Email address"
           value={email}
           last
+          badge={currentUser.isEmailVerified === true ? <VerifiedBadge/> : <></>}
         />
       </div>
 
@@ -90,11 +87,13 @@ function ProfileField({
   label,
   value,
   last = false,
+  badge,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   last?: boolean;
+  badge?: ReactNode;
 }) {
   return (
     <div
@@ -113,12 +112,10 @@ function ProfileField({
 
         <p className="mt-1 truncate text-sm font-medium text-gray-900 dark:text-white">
           {value}
-        </p> 
+        </p>
       </div>
 
-      <div>
-        
-      </div>
+      {badge}
     </div>
   );
 }
