@@ -4,8 +4,10 @@ import Hero from "../components/home/hero/Hero";
 import Pricing from "../components/home/pricing/Index";
 import Stats from "../components/home/stats/Index";
 import Section from "../components/layout/section/Section";
+import { useAuth } from "../context/Auth/AuthContext";
 
 export default function Home() {
+  const { currentUser } = useAuth();
   return (
     <>
       <Section>
@@ -20,9 +22,11 @@ export default function Home() {
       <Section>
         <Education />
       </Section>
-      <Section>
-        <OpenAccount />
-      </Section>
+      {!currentUser && (
+        <Section>
+          <OpenAccount />
+        </Section>
+      )}
     </>
   );
 }

@@ -2,6 +2,7 @@ import { Link, NavLink } from "react-router";
 import ThemeBtn from "../../common/ThemeBtn";
 import Dropdown from "./Dropdown";
 import { useAuth } from "../../../context/Auth/AuthContext";
+import TradeXLogo from "../../common/Logo";
 
 export default function Navbar() {
   const { currentUser } = useAuth();
@@ -10,34 +11,23 @@ export default function Navbar() {
       <div className="flex-2 px-4 md:px-8 lg:px-16 xl:px-32">
         <Link to={"/"}>
           {" "}
-          {/* <img src={logo} alt="logo" className="w-32.25" /> */}
-          <h1 className="text-3xl font-bold text-[#387ed1]">TradeX</h1>
+          <TradeXLogo/>
         </Link>
       </div>
       <div
         id="nav-tags"
         className="flex flex-1 justify-center space-x-10 dark:text-white text-gray-800 lg:flex hidden "
       >
-        {currentUser ? (
-          <a
-            href="http://localhost:5174"
-            className={`cursor-pointer  hover:text-[#387ed1]`}
-          >
-            Dashboard
-          </a>
-        ) : (
-          <NavLink
-            to="/signup"
-            className={({ isActive }) =>
-              `cursor-pointer hover:text-[#387ed1] ${
-                isActive ? "text-[#387ed1] font-semibold" : ""
-              }`
-            }
-          >
-            Signup
-          </NavLink>
-        )}
-
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `cursor-pointer hover:text-[#387ed1] ${
+              isActive ? "text-[#387ed1] font-semibold" : ""
+            }`
+          }
+        >
+          Home
+        </NavLink>
         <NavLink
           to="/about"
           className={({ isActive }) =>
@@ -47,17 +37,6 @@ export default function Navbar() {
           }
         >
           About
-        </NavLink>
-
-        <NavLink
-          to="/products"
-          className={({ isActive }) =>
-            `cursor-pointer hover:text-[#387ed1] ${
-              isActive ? "text-[#387ed1] font-semibold" : ""
-            }`
-          }
-        >
-          Products
         </NavLink>
 
         <NavLink
@@ -81,6 +60,52 @@ export default function Navbar() {
         >
           Support
         </NavLink>
+
+        {currentUser && (
+          <NavLink
+            to="/profile"
+            className={({ isActive }) =>
+              `cursor-pointer hover:text-[#387ed1] ${
+                isActive ? "text-[#387ed1] font-semibold" : ""
+              }`
+            }
+          >
+            Profile
+          </NavLink>
+        )}
+
+        {currentUser ? (
+          <a
+            href="http://localhost:5174"
+            className={`cursor-pointer  hover:text-[#387ed1]`}
+          >
+            Dashboard
+          </a>
+        ) : (
+          <NavLink
+            to="/signup"
+            className={({ isActive }) =>
+              `cursor-pointer hover:text-[#387ed1] ${
+                isActive ? "text-[#387ed1] font-semibold" : ""
+              }`
+            }
+          >
+            Signup
+          </NavLink>
+        )}
+
+        {!currentUser && (
+          <NavLink
+            to="/login"
+            className={({ isActive }) =>
+              `cursor-pointer hover:text-[#387ed1] ${
+                isActive ? "text-[#387ed1] font-semibold" : ""
+              }`
+            }
+          >
+            Login
+          </NavLink>
+        )}
       </div>
 
       <div className="flex items-center md:space-x-8 lg:space-x-10 space-x-4 lg:px-12 px-4">

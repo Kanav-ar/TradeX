@@ -7,8 +7,10 @@ import AuthCard from "../components/signupAndLogin/AuthCard";
 import AuthHeader from "../components/signupAndLogin/AuthHeader";
 import axios from "axios";
 import { X } from "lucide-react";
+import { useAuth } from "../context/Auth/AuthContext";
 
 export default function Login() {
+  const {setCurrentUser} = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -27,7 +29,8 @@ export default function Login() {
     setError(null);
 
     try {
-      await api.post("/login", formData);
+      const response = await api.post("/login", formData);
+      setCurrentUser(response.data.data.user);
       navigate("/");
       setFormData({ identifier: "", password: "" });
     } catch (err) {

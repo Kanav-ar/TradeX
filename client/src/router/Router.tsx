@@ -5,7 +5,6 @@ import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import About from "../pages/About";
 import Pricing from "../pages/Pricing";
-import Products from "../pages/Products";
 import Signup from "../pages/Signup";
 import Support from "../pages/Support";
 import NotFound from "../pages/NotFound";
@@ -14,8 +13,12 @@ import CurrencyTable from "../components/pricing/dynamicTables/CurrencyTable";
 import CommodityTable from "../components/pricing/dynamicTables/CommodityTable";
 import FandOTable from "../components/pricing/dynamicTables/F&O";
 import Login from "../pages/Login";
-import EmailVerify from "../pages/EmailVerify";
+import EmailVerify from "../pages/VerifyEmail";
 import Profile from "../pages/Profile";
+import ForgotPassword from "../pages/ForgotPassword";
+import ChangePassword from "../components/profile/subpages/ChangePassword";
+import PersonalInformation from "../components/profile/subpages/ViewProfile";
+import Security from "../components/profile/subpages/Security";
 
 export const router = createBrowserRouter([
   {
@@ -56,10 +59,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path: "products",
-        element: <Products />,
-      },
+    
       {
         path: "support",
         element: <Support />,
@@ -67,6 +67,18 @@ export const router = createBrowserRouter([
       { path: "/profile",
         element:<Profile/>
        },
+       {
+        path:"/change-password",
+        element:<ChangePassword/>
+       },
+       {
+        path:"/me",
+        element:<PersonalInformation/>
+       },
+       {
+        path:"/security",
+        element:<Security/>
+       }
     ],
   },
   {
@@ -82,8 +94,8 @@ export const router = createBrowserRouter([
     element: <EmailVerify />,
   },
   {
-    path: "/forgot-password/:token",
-    element: <EmailVerify />,
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
 
   {

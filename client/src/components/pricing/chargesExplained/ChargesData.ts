@@ -8,7 +8,6 @@ export const leftCharges: ChargesExplained[] = [
     title: "Securities/Commodities transaction tax",
     description: [
       "Tax by the government when transacting on the exchanges. Charged as above on both buy and sell sides when trading equity delivery. Charged only on selling side when trading intraday or on F&O.",
-      "When trading at Zerodha, STT/CTT can be a lot more than the brokerage we charge. Important to keep a tab.",
     ],
   },
   {
@@ -88,9 +87,7 @@ export const rightCharges: ChargesExplained[] = [
   },
   {
     title: "Pledging Charges",
-    description: [
-      "₹30 + GST per pledge request per ISIN.",
-    ],
+    description: ["₹30 + GST per pledge request per ISIN."],
   },
   {
     title: "AMC (Account Maintenance Charges)",
@@ -108,9 +105,7 @@ export const rightCharges: ChargesExplained[] = [
   },
   {
     title: "Off-market Transfer Charges",
-    description: [
-      "₹25 per transaction.",
-    ],
+    description: ["₹25 per transaction."],
   },
   {
     title: "Physical CMR Request",
@@ -121,9 +116,7 @@ export const rightCharges: ChargesExplained[] = [
   },
   {
     title: "Payment Gateway Charges",
-    description: [
-      "₹9 + GST (not applicable for UPI transfers).",
-    ],
+    description: ["₹9 + GST (not applicable for UPI transfers)."],
   },
   {
     title: "Delayed Payment Charges",
@@ -138,5 +131,4 @@ export const rightCharges: ChargesExplained[] = [
       "Intraday Brokerage: 0.05% per executed order.",
     ],
   },
-  
 ];

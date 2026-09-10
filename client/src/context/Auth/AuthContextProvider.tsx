@@ -17,7 +17,7 @@ export default function AuthContextProvider({
     const getCurrentUser = async () => {
       try {
         const response = await api.get("/me");
-        console.log(response.data)
+        console.log(response.data);
         setCurrentUser(response.data.data.user);
       } catch (error) {
         setCurrentUser(null);
@@ -29,8 +29,18 @@ export default function AuthContextProvider({
     getCurrentUser();
   }, []);
 
+  const logout = async () => {
+    try {
+      await api("/logout");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setCurrentUser(null);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser, loading }}>
+    <AuthContext.Provider value={{ currentUser, setCurrentUser, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -87,7 +87,7 @@ const WatchList = () => {
   };
 
   return (
-    <div className=" hidden lg:block lg:basis-[32%] h-viewport overflow-y-auto scrollbar-thumb-[#d1d5db] hover:scrollbar-thumb-[#9ca3af] border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200  dark:scrollbar-thumb-[#374151] dark:hover:scrollbar-thumb-[#4b5563]">
+    <div className="h-full w-full overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] lg:basis-[32%] h-viewport overflow-y-auto scrollbar-thumb-[#d1d5db] hover:scrollbar-thumb-[#9ca3af] border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-[#070d17] dark:shadow-none transition-colors duration-200  dark:scrollbar-thumb-[#374151] dark:hover:scrollbar-thumb-[#4b5563]">
       <div className="relative flex items-center">
         <input
           type="text"

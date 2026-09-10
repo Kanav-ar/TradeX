@@ -8,16 +8,18 @@ import AuthCard from "../components/signupAndLogin/AuthCard";
 import AuthHeader from "../components/signupAndLogin/AuthHeader";
 import axios from "axios";
 import { X } from "lucide-react";
+import { useAuth } from "../context/Auth/AuthContext";
 
 export default function Signup() {
-   const navigate = useNavigate();
+  const { setCurrentUser } = useAuth();
+  const navigate = useNavigate();
   const [terms, setTerms] = useState(false);
-  const [error, setError] = useState<string|null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    fullname:"",
+    fullname: "",
     password: "",
   });
 
@@ -37,8 +39,9 @@ export default function Signup() {
         setError("Unable to create account");
         return;
       }
+      setCurrentUser(response.data.data.user);
       navigate("/");
-      setFormData({ username: "", email: "", fullname:"", password: "" });
+      setFormData({ username: "", email: "", fullname: "", password: "" });
     } catch (err) {
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message ?? "Something went wrong");
@@ -52,7 +55,6 @@ export default function Signup() {
 
   return (
     <section className="min-h-screen bg-gray-50 dark:bg-[#070d17]">
-      
       <div className="flex flex-col lg:flex-row min-h-screen px-6 py-8 justify-around gap-4">
         <AuthHeader />
 
@@ -61,14 +63,13 @@ export default function Signup() {
             title="Create your account"
             description="Enter your details to get started."
           >
-            <form
-              className="mt-6 space-y-4"
-              onSubmit={submitFormData}
-            >
+            <form className="mt-6 space-y-4" onSubmit={submitFormData}>
               {error && (
                 <p className="text-red-400 flex items-center gap-2">
                   {error}{" "}
-                  <button type="button" className="hover:bg-gray-500/30 cursor-pointer rounded-full"
+                  <button
+                    type="button"
+                    className="hover:bg-gray-500/30 cursor-pointer rounded-full"
                     onClick={() => {
                       setError(null);
                     }}

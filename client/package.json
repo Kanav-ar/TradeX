@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "TradeX",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -20,6 +20,7 @@
     "react-dom": "^19.2.6",
     "react-icons": "^5.7.0",
     "react-router": "^8.3.0",
+    "sonner": "^2.0.8",
     "tailwindcss": "^4.3.2"
   },
   "devDependencies": {
