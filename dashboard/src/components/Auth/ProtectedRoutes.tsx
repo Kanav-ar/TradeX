@@ -11,7 +11,7 @@ export default function ProtectedRoute() {
   }
 
   if (!currentUser) {
-    window.location.href = `${import.meta.env.VITE_CLIENT_URL}/login`;
+    window.location.href = `${import.meta.env.VITE_CLIENT_URL}login`;
     return null;
   }
 
