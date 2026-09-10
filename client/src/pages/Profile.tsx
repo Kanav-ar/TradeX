@@ -12,6 +12,7 @@ import { useAuth } from "../context/Auth/AuthContext";
 import SignUpBtn from "../components/signupAndLogin/SignupBtn";
 import LoginBtn from "../components/signupAndLogin/LoginBtn";
 import EmailStatus from "../components/profile/email/EmailStatus";
+import { Link } from "react-router";
 
 export default function Profile() {
   const { currentUser, logout } = useAuth();
@@ -142,6 +143,7 @@ export default function Profile() {
             title="Personal information"
             description="View your name, username, and email address."
             action="View profile"
+            href="/me"
           />
 
           <SettingRow
@@ -157,6 +159,7 @@ export default function Profile() {
             title="Security"
             description="Manage the security of your TradeX account."
             action="Review security"
+            href="/security"
           />
         </div>
       </section>
@@ -273,13 +276,13 @@ function SettingRow({
 
   if (href) {
     return (
-      <a
-        href={href}
+      <Link
+        to={href}
         className=" group flex items-center justify-between gap-6 border-b border-gray-100 px-5 py-5 cursor-pointer transition-colors duration-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/40
         "
       >
         {content}
-      </a>
+      </Link>
     );
   }
 

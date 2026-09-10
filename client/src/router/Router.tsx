@@ -17,6 +17,7 @@ import EmailVerify from "../pages/VerifyEmail";
 import Profile from "../pages/Profile";
 import ForgotPassword from "../pages/ForgotPassword";
 import ChangePassword from "../components/profile/subpages/ChangePassword";
+import PersonalInformation from "../components/profile/subpages/ViewProfile";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,14 @@ export const router = createBrowserRouter([
        {
         path:"/change-password",
         element:<ChangePassword/>
+       },
+       {
+        path:"/me",
+        element:<PersonalInformation/>
+       },
+       {
+        path:"/security",
+        element:<></>
        }
     ],
   },
