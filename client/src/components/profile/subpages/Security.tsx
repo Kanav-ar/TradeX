@@ -119,7 +119,7 @@ export default function Security() {
         </div>
       </div>
 
-      {/* Security note */}
+     
       <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50/70 p-5 dark:border-blue-900/40 dark:bg-blue-950/20">
         <p className="text-sm font-medium text-blue-700 dark:text-blue-300">
           Keep your credentials private

@@ -9,6 +9,7 @@ import AuthHeader from "../components/signupAndLogin/AuthHeader";
 import axios from "axios";
 import { X } from "lucide-react";
 import { useAuth } from "../context/Auth/AuthContext";
+import ForgetPasswordBtn from "../components/common/ForgetPassBtn";
 
 export default function Signup() {
   const { setCurrentUser } = useAuth();
@@ -107,7 +108,11 @@ export default function Signup() {
                 onChange={handleFormData}
               />
 
-              <TermsCheckbox checked={terms} onChange={setTerms} />
+              <div className="flex justify-between py-2">
+                {" "}
+                <TermsCheckbox checked={terms} onChange={setTerms} />{" "}
+                <ForgetPasswordBtn />{" "}
+              </div>
 
               <button
                 type="submit"

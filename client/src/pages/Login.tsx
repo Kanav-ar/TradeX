@@ -8,9 +8,10 @@ import AuthHeader from "../components/signupAndLogin/AuthHeader";
 import axios from "axios";
 import { X } from "lucide-react";
 import { useAuth } from "../context/Auth/AuthContext";
+import ForgetPasswordBtn from "../components/common/ForgetPassBtn";
 
 export default function Login() {
-  const {setCurrentUser} = useAuth();
+  const { setCurrentUser } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -82,6 +83,11 @@ export default function Login() {
                 value={formData.password}
                 onChange={handleFormData}
               />
+
+              <div className="flex justify-between">
+                {" "}
+                <ForgetPasswordBtn />{" "}
+              </div>
 
               <button
                 type="submit"
