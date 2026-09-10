@@ -1,6 +1,5 @@
 import {
   ArrowRight,
-  CheckCircle2,
   KeyRound,
   LockKeyhole,
   LogOut,
@@ -13,6 +12,7 @@ import SignUpBtn from "../components/signupAndLogin/SignupBtn";
 import LoginBtn from "../components/signupAndLogin/LoginBtn";
 import EmailStatus from "../components/profile/email/EmailStatus";
 import { Link } from "react-router";
+import VerifiedBadge from "../components/common/VerifiedBadge";
 
 export default function Profile() {
   const { currentUser, logout } = useAuth();
@@ -81,10 +81,7 @@ export default function Profile() {
                   </h2>
 
                   {currentUser.isEmailVerified && (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400">
-                      <CheckCircle2 className="h-3.5 w-3.5" />
-                      Verified
-                    </span>
+                    <VerifiedBadge/>
                   )}
                 </div>
 

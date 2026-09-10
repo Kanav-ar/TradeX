@@ -113,7 +113,11 @@ function ProfileField({
 
         <p className="mt-1 truncate text-sm font-medium text-gray-900 dark:text-white">
           {value}
-        </p>
+        </p> 
+      </div>
+
+      <div>
+        
       </div>
     </div>
   );
