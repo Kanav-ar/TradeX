@@ -79,6 +79,8 @@ export default function Menu() {
                 </NavLink>
               ))}
 
+              <a className="rounded-lg px-4 py-3 text-sm font-semibold text-gray-600 hover:bg-[#387ed1]/30 dark:text-gray-300 dark:hover:bg-[#387ed1]/30 transition-colors" href={`${import.meta.env.VITE_CLIENT_URL}`}>Home</a>
+
               <div className="my-2 h-px bg-gray-200 dark:bg-gray-700" />
 
               <button
