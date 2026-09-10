@@ -60,7 +60,7 @@ export const verificationEmailTemplate = ({
                         color: #222222;
                       "
                     >
-                      TradeApp
+                      Trade<span style="color:#3B82F6">X</span>
                     </h1>
                   </td>
                 </tr>

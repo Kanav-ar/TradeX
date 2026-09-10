@@ -60,7 +60,7 @@ export const forgotPasswordEmailTemplate = ({
                         color: #222222;
                       "
                     >
-                      TradeX
+                       Trade<span style="color:#3B82F6">X</span>
                     </h1>
                   </td>
                 </tr>
