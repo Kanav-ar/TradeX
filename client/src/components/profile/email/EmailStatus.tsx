@@ -1,33 +1,11 @@
-import { useState } from "react";
-import { api } from "../../../api/axios";
+
 import { useAuth } from "../../../context/Auth/AuthContext";
 import BlueBtn from "../../common/BlueBtn";
-import { toast } from "sonner";
+import VerifyEmailBtn from "../../common/VerifyEmailBtn";
+
 
 export default function EmailStatus() {
   const { currentUser } = useAuth();
-  const [isResending, setIsResending] = useState(false);
-
-  async function resendVerificationEmail() {
-    if (isResending) return;
-
-    try {
-      setIsResending(true);
-
-      await api.post("/resend");
-
-      toast.success("Verification email sent", {
-      description: "Check your inbox for the verification link.",
-    });
-    } catch (error) {
-      console.error("Failed to resend verification email:", error);
-      toast.error("Unable to send email", {
-      description: "Please try again in a moment.",
-    });
-    } finally {
-      setIsResending(false);
-    }
-  }
 
   return (
     <div className="rounded-2xl border border-gray-200 bg-gray-50 px-5 py-4 dark:border-gray-700 dark:bg-gray-800/50">
@@ -54,11 +32,7 @@ export default function EmailStatus() {
               </span>
             </div>
 
-            <BlueBtn
-              tag={isResending ? "Sending..." : "Verify Email"}
-              onClick={resendVerificationEmail}
-              disabled={isResending}
-            />
+          <VerifyEmailBtn/>
           </div>
         )}
       </div>

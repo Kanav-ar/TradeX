@@ -4,10 +4,13 @@ import { useAuth } from "../../../context/Auth/AuthContext";
 import VerifiedBadge from "../../common/VerifiedBadge";
 import type { ReactNode } from "react";
 import NotVerifiedBadge from "../../common/NotVerfiedBadge";
+import BlueBtn from "../../common/BlueBtn";
+import VerifyEmailBtn from "../../common/VerifyEmailBtn";
 
 export default function PersonalInformation() {
   const { currentUser } = useAuth();
 
+  const verified = currentUser?.isEmailVerified;
   if (!currentUser) {
     return (
       <div className="flex min-h-[70vh] items-center justify-center">
@@ -70,7 +73,8 @@ export default function PersonalInformation() {
           label="Email address"
           value={email}
           last
-          badge={currentUser.isEmailVerified === true ? <VerifiedBadge/> : <NotVerifiedBadge/>}
+          badge={verified ? <VerifiedBadge /> : <NotVerifiedBadge />}
+          btn={!verified && <VerifyEmailBtn/>}
         />
       </div>
 
@@ -89,12 +93,14 @@ function ProfileField({
   value,
   last = false,
   badge,
+  btn,
 }: {
   icon: React.ReactNode;
   label: string;
   value: string;
   last?: boolean;
   badge?: ReactNode;
+  btn?: ReactNode;
 }) {
   return (
     <div
@@ -115,8 +121,9 @@ function ProfileField({
           {value}
         </p>
       </div>
-
       {badge}
+
+      <span className="ml-4">{btn}</span>
     </div>
   );
 }
