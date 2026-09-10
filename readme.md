@@ -29,6 +29,7 @@ The project focuses on more than just the visual appearance of a trading platfor
 * [Application Flow](#application-flow)
 * [Frontend](#frontend)
 * [Backend](#backend)
+* [Api Routes](#api-routes)
 * [API Integration](#api-integration)
 * [Data Flow](#data-flow)
 * [Authentication Flow](#authentication-flow)
@@ -549,6 +550,813 @@ Major backend responsibilities include:
 * price information
 
 The backend acts as the authoritative layer for application operations rather than allowing the frontend to directly control critical business logic.
+
+---
+
+# API Routes
+
+TradeX uses a RESTful API architecture built with **Express.js**. The backend is divided into focused route modules, with controllers responsible for business logic and middleware responsible for authentication and request validation.
+
+The API is organized into the following modules:
+
+* Authentication & User Management
+* Holdings
+* Positions
+* Orders
+* Funds
+* Watchlist & Market Data
+* Health Check
+
+Protected endpoints use the `authenticate` middleware to ensure that only authenticated users can access user-specific resources or perform account-related operations.
+
+---
+
+## Route Architecture
+
+The general request flow in TradeX is:
+
+```text
+Client
+   ↓
+Express Router
+   ↓
+Middleware
+   ├── Authentication
+   └── Validation
+   ↓
+Controller
+   ↓
+Business Logic
+   ↓
+Database / External API
+   ↓
+Response
+```
+
+The routes are separated by responsibility, which keeps authentication, portfolio management, trading operations, and market-data functionality independent and easier to maintain.
+
+---
+
+# 1. Authentication & User Routes
+
+The user router handles account creation, authentication, email verification, password recovery, token management, and authenticated user operations.
+
+> **Router:** `userRouter`
+
+## Public Routes
+
+These routes do not require the `authenticate` middleware.
+
+| Method | Endpoint                               | Description                                                  | Validation                 |
+| ------ | -------------------------------------- | ------------------------------------------------------------ | -------------------------- |
+| `POST` | `/signup`                              | Registers a new user account                                 | `registerValidationSchema` |
+| `POST` | `/login`                               | Authenticates an existing user                               | `loginValidationSchema`    |
+| `POST` | `/verify-email/:verificationToken`     | Verifies the user's email address using a verification token | None                       |
+| `POST` | `/forgot-password`                     | Initiates the forgot-password process                        | None                       |
+| `POST` | `/forgot-password/:resetPasswordToken` | Resets the user's password using the reset token             | None                       |
+| `POST` | `/refresh-token`                       | Refreshes the user's access token                            | None                       |
+
+### `POST /signup`
+
+Creates a new TradeX user account.
+
+**Middleware:**
+
+* `validate(registerValidationSchema)`
+
+**Controller:**
+
+* `registerUser`
+
+The request is validated against the registration schema before the controller is executed.
+
+---
+
+### `POST /login`
+
+Authenticates a registered user and creates the authenticated session/token flow.
+
+**Middleware:**
+
+* `validate(loginValidationSchema)`
+
+**Controller:**
+
+* `loginUser`
+
+---
+
+### `POST /verify-email/:verificationToken`
+
+Verifies a user's email address through the verification token supplied in the URL.
+
+**URL Parameter:**
+
+```text
+verificationToken
+```
+
+**Controller:**
+
+* `verifyEmail`
+
+---
+
+### `POST /forgot-password`
+
+Starts the password-recovery workflow.
+
+**Controller:**
+
+* `forgotPasswordRequest`
+
+This endpoint is used when a user requests assistance recovering access to their account.
+
+---
+
+### `POST /forgot-password/:resetPasswordToken`
+
+Completes the password-reset workflow using the reset token.
+
+**URL Parameter:**
+
+```text
+resetPasswordToken
+```
+
+**Controller:**
+
+* `resetForgotPassword`
+
+---
+
+### `POST /refresh-token`
+
+Requests a new access token using the application's token-refresh mechanism.
+
+**Controller:**
+
+* `refreshAccessToken`
+
+---
+
+## Protected User Routes
+
+These endpoints require:
+
+```text
+authenticate
+```
+
+middleware.
+
+| Method | Endpoint           | Description                                            |
+| ------ | ------------------ | ------------------------------------------------------ |
+| `GET`  | `/me`              | Returns the currently authenticated user's information |
+| `POST` | `/logout`          | Logs out the authenticated user                        |
+| `POST` | `/resend`          | Resends email verification for the authenticated user  |
+| `POST` | `/change-password` | Changes the authenticated user's password              |
+
+---
+
+### `GET /me`
+
+Returns information about the currently authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getCurrentUser`
+
+---
+
+### `POST /logout`
+
+Logs out the currently authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `logoutUser`
+
+---
+
+### `POST /resend`
+
+Resends the email-verification request for the authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `resendEmailVerification`
+
+---
+
+### `POST /change-password`
+
+Allows an authenticated user to change their password.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `changePassword`
+
+---
+
+# 2. Holdings Routes
+
+The holdings router manages securities held in the user's portfolio.
+
+> **Router:** `holdingRouter`
+
+All holdings routes are protected by authentication.
+
+| Method   | Endpoint | Description                                       |
+| -------- | -------- | ------------------------------------------------- |
+| `GET`    | `/`      | Retrieves all holdings for the authenticated user |
+| `POST`   | `/`      | Adds a holding                                    |
+| `DELETE` | `/:id`   | Deletes a holding                                 |
+
+### `GET /`
+
+Fetches all holdings associated with the authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getAllHoldings`
+
+---
+
+### `POST /`
+
+Adds a new holding to the portfolio.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `addHolding`
+
+---
+
+### `DELETE /:id`
+
+Deletes a specific holding.
+
+**URL Parameter:**
+
+```text
+id
+```
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `deleteHolding`
+
+---
+
+# 3. Positions Routes
+
+The positions router provides access to the user's trading positions.
+
+> **Router:** `positionRouter`
+
+All position routes require authentication.
+
+| Method | Endpoint | Description                                        |
+| ------ | -------- | -------------------------------------------------- |
+| `GET`  | `/`      | Retrieves all positions for the authenticated user |
+| `GET`  | `/:id`   | Retrieves a specific position by ID                |
+
+### `GET /`
+
+Returns all positions associated with the authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getAllPositions`
+
+---
+
+### `GET /:id`
+
+Returns a specific position.
+
+**URL Parameter:**
+
+```text
+id
+```
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getPositionById`
+
+---
+
+# 4. Order Routes
+
+The order router handles the trading portion of TradeX, including retrieving orders and placing buy/sell orders.
+
+> **Router:** `orderRouter`
+
+All order endpoints require authentication.
+
+| Method | Endpoint    | Description                                     | Validation              |
+| ------ | ----------- | ----------------------------------------------- | ----------------------- |
+| `GET`  | `/`         | Retrieves all orders for the authenticated user | Authentication          |
+| `POST` | `/buy`      | Places a buy order                              | `orderValidationSchema` |
+| `POST` | `/sell`     | Places a sell order                             | `orderValidationSchema` |
+| `GET`  | `/:orderId` | Retrieves a specific order by ID                | Authentication          |
+
+---
+
+### `GET /`
+
+Retrieves all orders belonging to the authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getAllOrders`
+
+---
+
+### `POST /buy`
+
+Creates a buy order.
+
+**Middleware:**
+
+* `authenticate`
+* `validate(orderValidationSchema)`
+
+**Controller:**
+
+* `buyOrder`
+
+The request passes through authentication and order validation before the buy operation is executed.
+
+---
+
+### `POST /sell`
+
+Creates a sell order.
+
+**Middleware:**
+
+* `authenticate`
+* `validate(orderValidationSchema)`
+
+**Controller:**
+
+* `sellOrder`
+
+The request passes through authentication and order validation before the sell operation is executed.
+
+---
+
+### `GET /:orderId`
+
+Retrieves a specific order using its order ID.
+
+**URL Parameter:**
+
+```text
+orderId
+```
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getOrderById`
+
+---
+
+# 5. Funds Routes
+
+The funds router manages the user's available trading funds.
+
+> **Router:** `fundRouter`
+
+All funds endpoints require authentication.
+
+| Method | Endpoint    | Description                             |
+| ------ | ----------- | --------------------------------------- |
+| `GET`  | `/`         | Retrieves the user's current funds      |
+| `POST` | `/add`      | Adds funds to the user's account        |
+| `POST` | `/withdraw` | Withdraws funds from the user's account |
+
+---
+
+### `GET /`
+
+Returns the funds information for the authenticated user.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `getFunds`
+
+---
+
+### `POST /add`
+
+Adds funds to the authenticated user's account.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `addFunds`
+
+---
+
+### `POST /withdraw`
+
+Withdraws funds from the authenticated user's account.
+
+**Middleware:**
+
+* `authenticate`
+
+**Controller:**
+
+* `withdrawFunds`
+
+---
+
+# 6. Watchlist & Market Data Routes
+
+The watchlist router provides stock and quote data used by the TradeX trading dashboard.
+
+> **Router:** `watchlistRouter`
+
+Unlike the portfolio and account routes, these endpoints do not use the `authenticate` middleware in the provided implementation.
+
+| Method | Endpoint  | Description                    |
+| ------ | --------- | ------------------------------ |
+| `GET`  | `/`       | Retrieves stock/watchlist data |
+| `GET`  | `/quotes` | Retrieves stock quote data     |
+
+---
+
+### `GET /`
+
+Retrieves the stock data used by the TradeX watchlist.
+
+**Controller:**
+
+* `getStocks`
+
+This endpoint provides the frontend with stock information that can be displayed dynamically in the watchlist.
+
+---
+
+### `GET /quotes`
+
+Retrieves quote information for stocks.
+
+**Controller:**
+
+* `getStockQuotes`
+
+This endpoint supplies quote/price information used by the frontend's market-data experience.
+
+---
+
+# 7. Health Check Route
+
+TradeX also exposes a basic health-check endpoint.
+
+> **Router:** Main `router`
+
+| Method | Endpoint | Description                                             |
+| ------ | -------- | ------------------------------------------------------- |
+| `GET`  | `/`      | Checks whether the API/server is healthy and responding |
+
+### `GET /`
+
+Executes the `healthCheck` controller.
+
+**Controller:**
+
+* `healthCheck`
+
+This route can be used to quickly verify that the backend server is running and capable of responding to requests.
+
+---
+
+# Authentication Overview
+
+TradeX distinguishes between public and protected endpoints.
+
+## Public
+
+The following user routes do not require authentication:
+
+```text
+POST /signup
+POST /login
+POST /verify-email/:verificationToken
+POST /forgot-password
+POST /forgot-password/:resetPasswordToken
+POST /refresh-token
+```
+
+The watchlist routes in the supplied implementation are also public:
+
+```text
+GET /
+GET /quotes
+```
+
+Their final URL depends on the router prefix used by the application.
+
+## Protected
+
+The following modules use the `authenticate` middleware:
+
+```text
+User
+Holdings
+Positions
+Orders
+Funds
+```
+
+This ensures that account-specific operations are only available to authenticated users.
+
+---
+
+# Validation Middleware
+
+TradeX uses a dedicated validation middleware for requests that require structured input validation.
+
+Validation is currently applied to:
+
+### User Registration
+
+```text
+POST /signup
+```
+
+Using:
+
+```text
+registerValidationSchema
+```
+
+### User Login
+
+```text
+POST /login
+```
+
+Using:
+
+```text
+loginValidationSchema
+```
+
+### Buy Orders
+
+```text
+POST /buy
+```
+
+Using:
+
+```text
+orderValidationSchema
+```
+
+### Sell Orders
+
+```text
+POST /sell
+```
+
+Using:
+
+```text
+orderValidationSchema
+```
+
+This approach keeps validation separate from controller logic and helps maintain cleaner request-handling code.
+
+---
+
+# Controller Layer
+
+Each route delegates its actual application behavior to a controller.
+
+The route files therefore remain lightweight and primarily define:
+
+* HTTP method
+* endpoint
+* middleware
+* validation
+* controller
+
+For example:
+
+```text
+POST /buy
+     ↓
+authenticate
+     ↓
+validate(orderValidationSchema)
+     ↓
+buyOrder
+```
+
+This keeps routing separate from business logic.
+
+---
+
+# API Module Overview
+
+The complete TradeX backend can be summarized as:
+
+```text
+                         TradeX API
+                             │
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+        ↓                    ↓                    ↓
+   Authentication         Portfolio            Trading
+        │                    │                    │
+        │            ┌───────┼───────┐            │
+        │            ↓       ↓       ↓            │
+        │        Holdings Positions Funds        Orders
+        │
+        ├── Signup
+        ├── Login
+        ├── Email Verification
+        ├── Password Recovery
+        ├── Token Refresh
+        ├── Current User
+        ├── Logout
+        ├── Resend Verification
+        └── Change Password
+
+                             │
+                             ↓
+                    Market Data
+                             │
+                       ┌─────┴─────┐
+                       ↓           ↓
+                   Watchlist     Quotes
+```
+
+---
+
+# Route Summary
+
+| Module    | Methods                 | Main Responsibilities                                                      | Authentication                 |
+| --------- | ----------------------- | -------------------------------------------------------------------------- | ------------------------------ |
+| User      | `GET`, `POST`           | Registration, login, verification, password management, session management | Mixed                          |
+| Holdings  | `GET`, `POST`, `DELETE` | Portfolio holdings                                                         | Required                       |
+| Positions | `GET`                   | User positions                                                             | Required                       |
+| Orders    | `GET`, `POST`           | Buy, sell, order retrieval                                                 | Required                       |
+| Funds     | `GET`, `POST`           | Funds management                                                           | Required                       |
+| Watchlist | `GET`                   | Stocks and market quotes                                                   | Not applied in supplied router |
+| Health    | `GET`                   | Server health check                                                        | Not required                   |
+
+---
+
+# Design Approach
+
+The route layer follows a modular structure so each part of the trading platform has a clearly defined responsibility.
+
+```text
+Routes
+  ↓
+Middleware
+  ↓
+Controllers
+  ↓
+Application Logic
+  ↓
+Data Layer / External Services
+```
+
+This separation makes the backend easier to:
+
+* maintain
+* debug
+* test
+* extend
+* secure
+* scale
+
+New functionality can be introduced by adding dedicated controllers, validators, and routes without tightly coupling unrelated modules.
+
+---
+
+# Complete Route Reference
+
+For quick reference, the routes supplied by the current implementation are:
+
+```text
+USER / AUTH
+
+POST   /signup
+POST   /login
+POST   /verify-email/:verificationToken
+POST   /forgot-password
+POST   /forgot-password/:resetPasswordToken
+POST   /refresh-token
+
+GET    /me
+POST   /logout
+POST   /resend
+POST   /change-password
+
+
+HOLDINGS
+
+GET    /
+POST   /
+DELETE /:id
+
+
+POSITIONS
+
+GET    /
+GET    /:id
+
+
+ORDERS
+
+GET    /
+POST   /buy
+POST   /sell
+GET    /:orderId
+
+
+FUNDS
+
+GET    /
+POST   /add
+POST   /withdraw
+
+
+WATCHLIST / MARKET DATA
+
+GET    /
+GET    /quotes
+
+
+HEALTH CHECK
+
+GET    /
+```
+
+> **Note:** The paths above are shown relative to their respective Express routers. The final API URLs depend on the prefixes assigned when each router is mounted in the main Express application.
+
 
 ---
 
