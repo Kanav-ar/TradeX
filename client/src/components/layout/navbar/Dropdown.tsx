@@ -53,13 +53,18 @@ export default function Dropdown() {
                   `rounded-lg px-4 py-3 transition ${
                     isActive
                       ? "bg-blue-50 font-semibold text-[#387ed1] dark:bg-gray-800"
-                      : "text-gray-800 hover:bg-[#387ed1]/30 dark:text-gray-200 dark:hover:bg-[#387ed1]"
+                      : "text-gray-800 hover:bg-[#387ed1]/25 dark:text-gray-200 dark:hover:bg-[#387ed1]/25"
                   }`
                 }
               >
                 {link.name}
               </NavLink>
             ))}
+            {
+              currentUser && (<a className="rounded-lg px-4 py-3 transition text-gray-700 hover:bg-blue-100 font-semibold dark:text-white hover:dark:bg-blue-500/30" href={`${import.meta.env.VITE_DASHBOARD_URL}`}>
+                Dashboard
+              </a>)
+            }
             {currentUser && (
               <button
                 className="text-red-500 dark:text-red-400 cursor-pointer flex px-4 py-4 hover:bg-red-400/20 rounded-lg transition"
