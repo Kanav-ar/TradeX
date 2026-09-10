@@ -11,7 +11,7 @@ export default function ProtectedRoute() {
   }
 
   if (!currentUser) {
-    window.location.href = "http://localhost:5173/login";
+    window.location.href = `${import.meta.env.VITE_CLIENT_URL}/login`;
     return null;
   }
 

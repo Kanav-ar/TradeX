@@ -7,7 +7,7 @@ import Orders from "../pages/Orders";
 import Holdings from "../pages/Holdings";
 import Positions from "../pages/Positions";
 import Funds from "../pages/Funds";
-import Apps from "../pages/Apps";
+
 import NotFound from "../pages/NotFound";
 import ProtectedRoute from "../components/Auth/ProtectedRoutes";
 
