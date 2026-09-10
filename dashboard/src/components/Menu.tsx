@@ -30,7 +30,7 @@ export default function Menu() {
           {menuItems.map((item) => (
             <li key={item.name} className="mr-[30px] inline-block">
               <NavLink
-                to={`/${item.path.toLowerCase()}`}
+                to={item.path}
                 className={({ isActive }) =>
                   `text-[0.8rem] font-normal transition-colors duration-150 ${
                     isActive
