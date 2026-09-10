@@ -4,7 +4,6 @@ import { useAuth } from "../../../context/Auth/AuthContext";
 import VerifiedBadge from "../../common/VerifiedBadge";
 import type { ReactNode } from "react";
 import NotVerifiedBadge from "../../common/NotVerfiedBadge";
-import BlueBtn from "../../common/BlueBtn";
 import VerifyEmailBtn from "../../common/VerifyEmailBtn";
 
 export default function PersonalInformation() {

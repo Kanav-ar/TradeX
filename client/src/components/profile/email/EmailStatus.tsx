@@ -1,6 +1,4 @@
-
 import { useAuth } from "../../../context/Auth/AuthContext";
-import BlueBtn from "../../common/BlueBtn";
 import VerifyEmailBtn from "../../common/VerifyEmailBtn";
 
 
