@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { useAuth } from "../../../context/Auth/AuthContext";
 import VerifiedBadge from "../../common/VerifiedBadge";
 import type { ReactNode } from "react";
+import NotVerifiedBadge from "../../common/NotVerfiedBadge";
 
 export default function PersonalInformation() {
   const { currentUser } = useAuth();
@@ -69,7 +70,7 @@ export default function PersonalInformation() {
           label="Email address"
           value={email}
           last
-          badge={currentUser.isEmailVerified === true ? <VerifiedBadge/> : <></>}
+          badge={currentUser.isEmailVerified === true ? <VerifiedBadge/> : <NotVerifiedBadge/>}
         />
       </div>
 

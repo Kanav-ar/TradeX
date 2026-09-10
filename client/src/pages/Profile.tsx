@@ -13,6 +13,7 @@ import LoginBtn from "../components/signupAndLogin/LoginBtn";
 import EmailStatus from "../components/profile/email/EmailStatus";
 import { Link } from "react-router";
 import VerifiedBadge from "../components/common/VerifiedBadge";
+import NotVerifiedBadge from "../components/common/NotVerfiedBadge";
 
 export default function Profile() {
   const { currentUser, logout } = useAuth();
@@ -80,9 +81,9 @@ export default function Profile() {
                     {fullname}
                   </h2>
 
-                  {currentUser.isEmailVerified && (
+                  {currentUser.isEmailVerified === true? (
                     <VerifiedBadge/>
-                  )}
+                  ) : (<NotVerifiedBadge/>)}
                 </div>
 
                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
