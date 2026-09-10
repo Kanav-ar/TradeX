@@ -15,6 +15,8 @@ import FandOTable from "../components/pricing/dynamicTables/F&O";
 import Login from "../pages/Login";
 import EmailVerify from "../pages/VerifyEmail";
 import Profile from "../pages/Profile";
+import ForgotPassword from "../pages/ForgotPassword";
+import ChangePassword from "../components/profile/subpages/ChangePassword";
 
 export const router = createBrowserRouter([
   {
@@ -63,6 +65,10 @@ export const router = createBrowserRouter([
       { path: "/profile",
         element:<Profile/>
        },
+       {
+        path:"/change-password",
+        element:<ChangePassword/>
+       }
     ],
   },
   {
@@ -78,8 +84,8 @@ export const router = createBrowserRouter([
     element: <EmailVerify />,
   },
   {
-    path: "/forgot-password/:token",
-    element: <EmailVerify />,
+    path: "/forgot-password",
+    element: <ForgotPassword />,
   },
 
   {

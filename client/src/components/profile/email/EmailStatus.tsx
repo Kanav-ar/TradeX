@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { api } from "../../api/axios";
-import { useAuth } from "../../context/Auth/AuthContext";
-import BlueBtn from "../common/BlueBtn";
+import { api } from "../../../api/axios";
+import { useAuth } from "../../../context/Auth/AuthContext";
+import BlueBtn from "../../common/BlueBtn";
 import { toast } from "sonner";
 
 export default function EmailStatus() {

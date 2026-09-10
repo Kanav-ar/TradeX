@@ -11,7 +11,7 @@ import {
 import { useAuth } from "../context/Auth/AuthContext";
 import SignUpBtn from "../components/signupAndLogin/SignupBtn";
 import LoginBtn from "../components/signupAndLogin/LoginBtn";
-import EmailStatus from "../components/profile/EmailStatus";
+import EmailStatus from "../components/profile/email/EmailStatus";
 
 export default function Profile() {
   const { currentUser, logout } = useAuth();
@@ -165,29 +165,10 @@ export default function Profile() {
         <button
           type="button"
           onClick={logout}
-          className="
-            group
-            flex
-            w-full
-            items-center
-            justify-between
-            rounded-2xl
-            border
-            border-red-100
-            bg-red-50/50
-            px-5
-            py-4
-            text-left
-            transition-all
-            duration-200
-            hover:border-red-200
-            hover:bg-red-50
-            dark:border-red-900/40
-            dark:bg-red-950/10
-            dark:hover:bg-red-950/20
+          className=" group flex w-full items-center justify-between cursor-pointer rounded-2xl border border-red-100 bg-red-50/50 px-5 py-4 text-left transition-all duration-200 hover:border-red-200 hover:bg-red-50 dark:border-red-900/40 dark:bg-red-950/10 dark:hover:bg-red-950/20
           "
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 ">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 text-red-500 dark:bg-red-950/40 dark:text-red-400">
               <LogOut className="h-5 w-5" />
             </div>
@@ -305,24 +286,7 @@ function SettingRow({
   return (
     <button
       type="button"
-      className="
-        group
-        flex
-        w-full
-        items-center
-        justify-between
-        gap-6
-        border-b
-        border-gray-100
-        px-5
-        py-5
-        text-left
-        transition-colors
-        duration-200
-        hover:bg-gray-50
-        dark:border-gray-800
-        dark:hover:bg-gray-800/40
-      "
+      className=" group flex w-full items-center justify-between gap-6 border-b border-gray-100 px-5 py-5 text-left transition-colors duration-200 hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/40"
     >
       {content}
     </button>
