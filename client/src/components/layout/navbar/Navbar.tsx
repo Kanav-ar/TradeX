@@ -76,7 +76,7 @@ export default function Navbar() {
 
         {currentUser ? (
           <a
-            href="http://localhost:5174"
+            href={`${import.meta.env.VITE_DASHBOARD_URL}`}
             className={`cursor-pointer  hover:text-[#387ed1]`}
           >
             Dashboard
