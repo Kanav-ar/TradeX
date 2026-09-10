@@ -18,7 +18,6 @@ const allowedOrigins = [
   process.env.DASHBOARD_URL,
 ].filter((origin): origin is string => Boolean(origin));
 
-
 app.use(
   cors({
     origin: allowedOrigins,

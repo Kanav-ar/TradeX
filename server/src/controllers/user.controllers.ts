@@ -10,8 +10,8 @@ import { sendEmail } from "../services/email/email.service";
 
 const cookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === "production",
-  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+  secure: process.env.COOKIE_SECURE === "true",
+  sameSite: process.env.COOKIE_SECURE === "true" ? "none" : "lax",
 };
 
 const generateAccessAndRefreshTokens = (user: IUser) => {
@@ -47,15 +47,15 @@ const registerUser = WrapAsync(async (req: Request, res: Response) => {
 
   const { unHashedToken, hashedToken, tokenExpiry } =
     newUser.generateTemporaryToken();
-    
-    newUser.emailVerificationToken = hashedToken;
-    newUser.emailVerificationExpiry = tokenExpiry;
-    const { accessToken, refreshToken } = generateAccessAndRefreshTokens(newUser);
-    
-    newUser.refreshToken = refreshToken;
-    await newUser.save();
-    
-    await sendEmail({
+
+  newUser.emailVerificationToken = hashedToken;
+  newUser.emailVerificationExpiry = tokenExpiry;
+  const { accessToken, refreshToken } = generateAccessAndRefreshTokens(newUser);
+
+  newUser.refreshToken = refreshToken;
+  await newUser.save();
+
+  await sendEmail({
     email: newUser.email,
     username: newUser.username,
     verificationUrl: `${process.env.FRONTEND_URL}/verify-email/${unHashedToken}`,
