@@ -1,4 +1,4 @@
-import { Resend } from "resend";
+import nodemailer from "nodemailer";
 import { welcomeEmailTemplate } from "../../templates/welcome-email";
 import { verificationEmailTemplate } from "../../templates/verification-email";
 import { forgotPasswordEmailTemplate } from "../../templates/forgot-password-email";
@@ -18,13 +18,20 @@ interface EmailTemplateTypes {
   forgotPassword: ({ username, verificationUrl }: EmailTemplateProps) => string;
 }
 
-const apiKey = process.env.RESEND_API_KEY;
+const smtpUser = process.env.SMTP_USER;
+const smtpPass = process.env.SMTP_PASS;
 
-if (!apiKey) {
-  throw new Error("RESEND_API_KEY is not defined");
+if (!smtpUser || !smtpPass) {
+  throw new Error("SMTP_USER or SMTP_PASS is not defined");
 }
 
-const resend = new Resend(apiKey);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: smtpUser,
+    pass: smtpPass,
+  },
+});
 
 const emailTemplates: EmailTemplateTypes = {
   welcome: welcomeEmailTemplate,
@@ -44,17 +51,14 @@ export const sendEmail = async ({
     verificationUrl,
   });
 
-  const { data, error } = await resend.emails.send({
-    from: "onboarding@resend.dev",
-    to: [email],
-    subject: subject,
+  const info = await transporter.sendMail({
+    from: `"TradeX" <${smtpUser}>`,
+    to: email,
+    subject,
     html,
   });
 
-  if (error) {
-    console.error("Resend error:", error);
-    throw new Error("Failed to send verification email");
-  }
-
-  return data;
+  return {
+    messageId: info.messageId,
+  };
 };
